@@ -1,0 +1,13 @@
+[package]
+name = "trial"
+version = "0.1.0"
+authors = ["colin"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ferris-says = "0.2"
+temperley_lieb_cat = { git = "https://github.com/rspencer01/temperley_lieb_cat" }
+itertools= "0.10.1"
+simple-matrix = "0.1"
