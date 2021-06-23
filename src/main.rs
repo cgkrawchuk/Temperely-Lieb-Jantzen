@@ -4,7 +4,7 @@ use itertools::Itertools;
 use std::io::{stdout, BufWriter};
 use temperley_lieb_cat::*;
 
-pub fn gramMatrix(n: usize, m: usize) -> Vec<Vec<i32>> {
+pub fn gramMatrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {
         for (c, i) in tab.iter().enumerate() {
             if *i < 2 * (c + 1) {
@@ -26,31 +26,31 @@ pub fn gramMatrix(n: usize, m: usize) -> Vec<Vec<i32>> {
     }
 
     let x = monicDiagrams.len();
-    let mut gm: Vec<Vec<i32>> = vec![vec![0; x as usize]; x as usize];
+    let mut gm: Vec<Vec<i64>> = vec![vec![0; x as usize]; x as usize];
     for i in 0..x {
         for j in 0..x {
             let (a, b) = &(monicDiagrams[i].involute()) * &monicDiagrams[j];
-            if a == 0 {
-                if b == TLDiagram::id(m) {
-                    gm[i][j] = 1;
+            if b == TLDiagram::id(m) {
+                if a == 0 {
+                    gm[i][j] = 1
                 } else {
-                    gm[i][j] = 0;
+                    gm[i][j] = (2 as i64).pow(a as u32);
                 }
             } else {
-                gm[i][j] = (2 as i32).pow(a as u32); //hopefully power of delta doesn't exceed u32!
+                gm[i][j] = 0;
             }
         }
     }
     return gm;
 }
 
-pub fn rowEchelonForm(matrix: &mut Vec<Vec<i32>>, p: i32) -> (Vec<Vec<i32>>, Vec<Vec<i32>>) {
-    let mut matrix_out: Vec<Vec<i32>> = matrix.to_vec();
+pub fn rowEchelonForm(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
+    let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let mut pivot = 0;
     let row_count = matrix_out.len();
     let column_count = matrix_out[0].len();
 
-    let mut identityMatrix: Vec<Vec<i32>> =
+    let mut identityMatrix: Vec<Vec<i64>> =
         vec![vec![0; column_count as usize]; row_count as usize];
     for k in 0..row_count {
         //hopefully row_count is less than column_count
@@ -58,6 +58,8 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i32>>, p: i32) -> (Vec<Vec<i32>>, Vec
     }
 
     for r in 0..row_count {
+        matrix_out = reduceModP(&mut matrix_out, p);
+        println!("{:?}", matrix_out);
         if column_count <= pivot {
             break;
         }
@@ -73,16 +75,11 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i32>>, p: i32) -> (Vec<Vec<i32>>, Vec
                 }
             }
         }
-        for j in 0..row_count {
-            let temp1 = matrix_out[r][j];
-            let temp2 = identityMatrix[r][j];
-            matrix_out[r][j] = matrix_out[i][j];
-            matrix_out[i][j] = temp1;
-            identityMatrix[r][j] = identityMatrix[i][j];
-            identityMatrix[i][j] = temp2;
-        }
+        matrix_out = swapRows(&mut matrix_out, r, i, row_count);
+        identityMatrix = swapRows(&mut identityMatrix, r, i, row_count);
+
         let a = matrix_out[r][pivot];
-        let modInv = mod_inv((((a % p) + p) % p) as isize, p as isize) as i32;
+        let modInv = mod_inv((((a % p) + p) % p), p);
         for j in 0..column_count {
             matrix_out[r][j] = matrix_out[r][j] * modInv;
             identityMatrix[r][j] = identityMatrix[r][j] * modInv;
@@ -101,8 +98,23 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i32>>, p: i32) -> (Vec<Vec<i32>>, Vec
     (matrix_out, identityMatrix)
 }
 
-pub fn reduceModP(matrix: &mut Vec<Vec<i32>>, p: i32) -> Vec<Vec<i32>> {
-    let mut matrix_out: Vec<Vec<i32>> = matrix.to_vec();
+pub fn swapRows(
+    matrixIn: &mut Vec<Vec<i64>>,
+    r: usize,
+    i: usize,
+    row_count: usize,
+) -> Vec<Vec<i64>> {
+    let mut matrix: Vec<Vec<i64>> = matrixIn.to_vec();
+    for j in 0..row_count {
+        let temp = matrix[r][j];
+        matrix[r][j] = matrix[i][j];
+        matrix[i][j] = temp;
+    }
+    matrix
+}
+
+pub fn reduceModP(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
+    let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let row_count = matrix_out.len();
     let column_count = matrix_out[0].len();
     for i in 0..row_count {
@@ -113,7 +125,7 @@ pub fn reduceModP(matrix: &mut Vec<Vec<i32>>, p: i32) -> Vec<Vec<i32>> {
     return matrix_out;
 }
 
-fn mod_inv(a: isize, module: isize) -> isize {
+fn mod_inv(a: i64, module: i64) -> i64 {
     let mut mn = (module, a);
     let mut xy = (0, 1);
 
@@ -128,7 +140,7 @@ fn mod_inv(a: isize, module: isize) -> isize {
     xy.0
 }
 
-pub fn numZeroRows(matrix: &mut Vec<Vec<i32>>) -> i32 {
+pub fn numZeroRows(matrix: &Vec<Vec<i64>>) -> i64 {
     let mut numZeroes = 0;
     let row_count = matrix.len();
     let column_count = matrix[0].len();
@@ -143,8 +155,11 @@ pub fn numZeroRows(matrix: &mut Vec<Vec<i32>>) -> i32 {
     return numZeroes;
 }
 
-fn reform_inner_product(new_basis: &mut Vec<Vec<i32>>,old_gram: &mut Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    let mut matrix_out: Vec<Vec<i32>> =
+fn reform_inner_product(
+    new_basis: &mut Vec<Vec<i64>>,
+    old_gram: &mut Vec<Vec<i64>>,
+) -> Vec<Vec<i64>> {
+    let mut matrix_out: Vec<Vec<i64>> =
         vec![vec![0; new_basis[0].len() as usize]; new_basis.len() as usize];
     for i in 0..new_basis.len() {
         for j in 0..new_basis.len() {
@@ -164,9 +179,9 @@ fn reform_inner_product(new_basis: &mut Vec<Vec<i32>>,old_gram: &mut Vec<Vec<i32
 }
 
 fn main() {
-    let m = 5;
-    let n = 3;
-    let p = 5;
+    let m = 6;
+    let n = 4;
+    let p = 3;
     let mut G = gramMatrix(m, n);
     println!("Gram Matrix of {0}, {1} is :", m, n);
     println!("{:?}", &G);
@@ -175,16 +190,19 @@ fn main() {
     println!("Reduced mod {}", p);
     println!("{:?}", &G);
 
-    let (mut reducedMatrix,mut transformMatrix) = rowEchelonForm(&mut G, p);
-    
-    println!("Row echelon form: \n{:?}", reduceModP(&mut reducedMatrix,p));
-    println!("transformation matrix:\n{:?}", reduceModP(&mut transformMatrix,p));
+    let (mut reducedMatrix, mut transformMatrix) = rowEchelonForm(&mut G, p);
 
-    let rank = (reducedMatrix.len() as i32) - numZeroRows(&mut reducedMatrix.clone());
+    println!("Row echelon form: \n{:?}", reduceModP(&reducedMatrix, p));
+    println!(
+        "transformation matrix:\n{:?}",
+        reduceModP(&transformMatrix, p)
+    );
+
+    let rank = (reducedMatrix.len() as i64) - numZeroRows(&reducedMatrix.clone());
     println!("dimension of head is: {}", &rank);
 
     let basisOfRad = &transformMatrix[(rank as usize)..];
-    let mut bor: Vec<Vec<i32>> = Vec::from(basisOfRad);
+    let mut bor: Vec<Vec<i64>> = Vec::from(basisOfRad);
     println!("{:?}", &basisOfRad);
 
     let newG = reform_inner_product(&mut bor, &mut G);
