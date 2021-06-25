@@ -79,13 +79,13 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec
 
         let q = matrix_out[r][pivot];
         let a = ((q % p) + p) % p;
-        if a !=0{
-        let modInv = mod_inv((((a % p) + p) % p), p);
-        for j in 0..column_count {
-            matrix_out[r][j] = matrix_out[r][j] * modInv;
-            identityMatrix[r][j] = identityMatrix[r][j] * modInv;
+        if a != 0 {
+            let modInv = mod_inv((((a % p) + p) % p), p);
+            for j in 0..column_count {
+                matrix_out[r][j] = matrix_out[r][j] * modInv;
+                identityMatrix[r][j] = identityMatrix[r][j] * modInv;
+            }
         }
-    }
         for j in 0..row_count {
             if j != r {
                 let hold = matrix_out[j][pivot];
@@ -180,10 +180,7 @@ fn reform_inner_product(
     matrix_out
 }
 
-fn main() {
-    let m = 6;
-    let n = 4;
-    let p = 3;
+fn recursiveOps(m: usize, n: usize, p: i64) {
     let mut G = gramMatrix(m, n);
     println!("Gram Matrix of {0}, {1} is :", m, n);
     println!("{:?}", &G);
@@ -200,13 +197,32 @@ fn main() {
         reduceModP(&transformMatrix, p)
     );
 
-    let rank = (reducedMatrix.len() as i64) - numZeroRows(&reducedMatrix.clone());
+    let mut rank = (reducedMatrix.len() as i64) - numZeroRows(&reducedMatrix.clone());
     println!("dimension of head is: {}", &rank);
 
-    let basisOfRad = &transformMatrix[(rank as usize)..];
-    let mut bor: Vec<Vec<i64>> = Vec::from(basisOfRad);
-    println!("{:?}", &basisOfRad);
+    while rank != 0 as i64 {
+        let basisOfRad = &transformMatrix[(rank as usize)..];
+        let mut bor: Vec<Vec<i64>> = Vec::from(basisOfRad);
+        println!("new basis: {:?}", &basisOfRad);
+        let mut newG = reform_inner_product(&mut bor, &mut G);
+        println!("new Gram Matrix: {:?}", &newG);
 
-    let newG = reform_inner_product(&mut bor, &mut G);
-    println!("{:?}", &newG);
+        let (mut reducedMatrix, mut transformMatrix) = rowEchelonForm(&mut newG, p);
+        println!("Row echelon form: \n{:?}", reduceModP(&reducedMatrix, p));
+        println!(
+            "transformation matrix:\n{:?}",
+            reduceModP(&transformMatrix, p)
+        );
+
+        rank = (reducedMatrix.len() as i64) - numZeroRows(&reducedMatrix.clone());
+        println!("dimension of head is: {}", rank);
+    }
+}
+
+fn main() {
+    let m = 8;
+    let n = 4;
+    let p = 3;
+
+    recursiveOps(m, n, p);
 }
