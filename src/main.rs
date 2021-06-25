@@ -56,10 +56,9 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec
         //hopefully row_count is less than column_count
         identityMatrix[k][k] = 1;
     }
-
+    //println!("{:?}", identityMatrix);
     for r in 0..row_count {
         matrix_out = reduceModP(&mut matrix_out, p);
-        println!("{:?}", matrix_out);
         if column_count <= pivot {
             break;
         }
@@ -78,12 +77,15 @@ pub fn rowEchelonForm(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec
         matrix_out = swapRows(&mut matrix_out, r, i, row_count);
         identityMatrix = swapRows(&mut identityMatrix, r, i, row_count);
 
-        let a = matrix_out[r][pivot];
+        let q = matrix_out[r][pivot];
+        let a = ((q % p) + p) % p;
+        if a !=0{
         let modInv = mod_inv((((a % p) + p) % p), p);
         for j in 0..column_count {
             matrix_out[r][j] = matrix_out[r][j] * modInv;
             identityMatrix[r][j] = identityMatrix[r][j] * modInv;
         }
+    }
         for j in 0..row_count {
             if j != r {
                 let hold = matrix_out[j][pivot];
