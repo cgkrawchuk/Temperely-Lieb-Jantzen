@@ -2,6 +2,7 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
+use std::io::{self,BufRead};
 
 pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {
@@ -73,8 +74,8 @@ pub fn row_echelon_form(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, V
                 }
             }
         }
-        matrix_out = swap_rows(&mut matrix_out, r, i);
-        identity_matrix = swap_rows(&mut identity_matrix, r, i);
+        swap_rows(&mut matrix_out, r, i);
+        swap_rows(&mut identity_matrix, r, i);
 
         let q = matrix_out[r][pivot];
         let a = ((q % p) + p) % p;
@@ -103,14 +104,13 @@ pub fn swap_rows(
     matrix: & mut  Vec<Vec<i64>>,
     r: usize,
     i: usize,
-) -> Vec<Vec<i64>> {
+)  {
     let row_count = matrix.len();
        for j in 0..row_count {
         let temp = matrix[r][j];
         matrix[r][j] = matrix[i][j];
         matrix[i][j] = temp;
     }
-    matrix.to_vec()
 }
 
 pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
@@ -182,44 +182,62 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     println!("gram Matrix of {0}, {1} is :", m, n);
     println!("{:?}", &g);
 
-    let mut g = reduce_mod_p(&mut g, p);
+    let mut h = reduce_mod_p(&mut g, p);
     println!("Reduced mod {}", p);
-    println!("{:?}", &g);
+    println!("{:?}", &h);
 
-    let ( reduced_matrix,  transform_matrix) = row_echelon_form(&mut g, p);
+    let ( reduced_matrix,  transform_matrix) = row_echelon_form(&mut h, p);
 
     println!("Row echelon form: \n{:?}", reduce_mod_p(&reduced_matrix, p));
     println!(
         "transformation matrix:\n{:?}",
         reduce_mod_p(&transform_matrix, p)
     );
-
-    let mut rank = (reduced_matrix.len() as i64) - num_zero_rows(&reduced_matrix);
+    let mut nzr = num_zero_rows(&reduced_matrix);
+    let mut rank = (reduced_matrix.len() as i64) - nzr;
     println!("dimension of head is: {}", &rank);
 
-    while rank != 0 as i64 {
+    while nzr != 0 as i64 {
         let basis_of_rad = &transform_matrix[(rank as usize)..];
         let mut bor: Vec<Vec<i64>> = Vec::from(basis_of_rad);
         println!("new basis: {:?}", &basis_of_rad);
-        let mut newg = reform_inner_product(&mut bor, &mut g);
-        println!("new gram Matrix: {:?}", &newg);
+        g = reform_inner_product(&mut bor, &mut g);
+        println!("new gram Matrix: {:?}", &g);
+        for i in 0..g.len(){
+            for j in 0..g.len(){
+            g[i][j] =g[i][j]/p;
+     
+       }
+    }
+        println!("divide by p: \n{:?}", &g);
 
-        let ( reduced_matrix,  transform_matrix) = row_echelon_form(&mut newg, p);
+        h = reduce_mod_p(&mut g, p);
+        println!("Reduced mod {}", p);
+        println!("{:?}", &h);
+
+
+        let ( reduced_matrix,  transform_matrix) = row_echelon_form(&mut h, p);
         println!("Row echelon form: \n{:?}", reduce_mod_p(&reduced_matrix, p));
         println!(
             "transformation matrix:\n{:?}",
             reduce_mod_p(&transform_matrix, p)
         );
-
-        rank = (reduced_matrix.len() as i64) - num_zero_rows(&reduced_matrix.clone());
-        println!("dimension of head is: {}", rank);
+       nzr= num_zero_rows(&reduced_matrix);
+       rank = (reduced_matrix.len() as i64) - nzr;
+       println!("dimension of head is: {}", rank);
     }
 }
 
 fn main() {
-    let m = 8;
-    let n = 4;
-    let p = 3;
-
-    recursive_ops(m, n, p);
+    println!("Enter m n p seperated by spaces");
+    let reader = io::stdin();
+    let numbers: Vec<usize> = 
+        reader.lock()                           
+              .lines().next().unwrap().unwrap() 
+              .split(' ').map(|s| s.trim())     
+              .filter(|s| !s.is_empty())        
+              .map(|s| s.parse().unwrap())      
+              .collect();                       
+    
+    recursive_ops(numbers[0], numbers[1], numbers[2] as i64);
 }
