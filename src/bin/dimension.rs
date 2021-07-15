@@ -44,7 +44,7 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     return gm;
 }
 
-pub fn row_echelon_form(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
+pub fn row_echelon_form(matrix: & Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
     let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let mut pivot = 0;
     let row_count = matrix_out.len();
@@ -74,8 +74,8 @@ pub fn row_echelon_form(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, V
                 }
             }
         }
-        swap_rows(&mut matrix_out, r, i);
-        swap_rows(&mut identity_matrix, r, i);
+         matrix_out.swap(r, i);
+         identity_matrix.swap(r, i);
 
         let q = matrix_out[r][pivot];
         let a = ((q % p) + p) % p;
@@ -100,14 +100,6 @@ pub fn row_echelon_form(matrix: &mut Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, V
     (matrix_out, identity_matrix)
 }
 
-pub fn swap_rows(matrix: &mut Vec<Vec<i64>>, r: usize, i: usize) {
-    let row_count = matrix.len();
-    for j in 0..row_count {
-        let temp = matrix[r][j];
-        matrix[r][j] = matrix[i][j];
-        matrix[i][j] = temp;
-    }
-}
 
 pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
     let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
@@ -138,16 +130,10 @@ fn mod_inv(a: i64, module: i64) -> i64 {
 }
 
 pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
-    let mut num_zeroes = 0;
-    let row_count = matrix.len();
-    let column_count = matrix[0].len();
-    let zero_vec = vec![0; column_count];
-    for x in 0..row_count {
-        if matrix[row_count - x - 1] == zero_vec {
-            num_zeroes = num_zeroes + 1;
-        } else {
-            break;
-        } //remove for more general matrix
+    let mut num_zeroes = 0; 
+    let zero_vec = vec![0; matrix[0].len()]; 
+    for x in matrix.iter(){
+        if x == &zero_vec {  num_zeroes+=1;}
     }
     return num_zeroes;
 }

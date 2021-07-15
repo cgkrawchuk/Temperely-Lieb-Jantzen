@@ -1,22 +1,16 @@
 use std::io::{self,BufRead};
 
 
-
-
-
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
-    let mut length = 0;
-    while p.pow(length as u32) <= r {
-        length += 1;
-    }
-    let mut digits: Vec<i64> = vec![0; length];
+    let mut digits: Vec<i64> = Vec::new();
     let mut index = 0;
     while r > 0 {
-        digits[length - index - 1] = (r % p) * (p.pow(index as u32));
+        digits.push((r % p) * (p.pow(index as u32)));
         r = r / p;
         index += 1;
     }
+    digits.reverse();
     return digits;
 }
 
@@ -112,9 +106,8 @@ fn knapsack_count_sols(v: &Vec<(i64, i64)>, i: usize, sum: i64) -> i64 {
             return 0;
         }
     }
-    let mut count = knapsack_count_sols(&v, i + 1, sum);
-    count += knapsack_count_sols(v, i + 1, sum - v[i].1);
-    return count;
+  return knapsack_count_sols(&v, i + 1, sum) + knapsack_count_sols(v, i + 1, sum - v[i].1);
+
 }
 
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
