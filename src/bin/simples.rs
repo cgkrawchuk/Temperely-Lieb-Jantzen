@@ -112,14 +112,12 @@ fn knapsack_count_sols(v: &Vec<(i64, i64)>, i: usize, sum: i64) -> i64 {
 
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
-    for i in v {
-        for x in v {
-            if knapsack_count_sols(v, (i.1 + 1) as usize, sum - x.1) > 0 {
-                ans.push(*x);
-                sum -= x.1;
-            }
-        }
-    }
+    for i in v { 
+     if knapsack_count_sols(v, (i.1 + 1) as usize, sum - i.1) > 0 { 
+         ans.push(*i); 
+         sum -= i.1; 
+     } 
+ } 
     return ans;
 }
 

@@ -79,6 +79,7 @@ pub fn row_echelon_form(matrix: & Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<
 
         let q = matrix_out[r][pivot];
         let a = ((q % p) + p) % p;
+        if a ==0{ println!("scream");}
         if a != 0 {
             let mod_inverse = mod_inv(((a % p) + p) % p, p);
             for j in 0..column_count {
