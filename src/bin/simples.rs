@@ -118,25 +118,20 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
-fn knapsack_count_sols(v: &Vec<(i64, i64)>, i: usize, sum: i64) -> i64 {
-    if i >= v.len() {
-        if sum == 0 {
-            return 1;
-        } else {
-            return 0;
-        }
+fn knapsack_count_sols(v: &[(i64, i64)], sum: i64) -> bool {
+    if v.is_empty() {
+        sum == 0
+    } else {
+        knapsack_count_sols(&v[1..], sum) | knapsack_count_sols(&v[1..], sum - v[0].1)
     }
-    return knapsack_count_sols(&v, i + 1, sum) + knapsack_count_sols(v, i + 1, sum - v[i].1);
 }
 
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
-    for i in v {
-        for x in v {
-            if knapsack_count_sols(v, (i.1 + 1) as usize, sum - x.1) > 0 {
-                ans.push(*x);
-                sum -= x.1;
-            }
+    for (n, x) in v.iter().enumerate() {
+        if knapsack_count_sols(&v[(n+1)..], sum - x.1) {
+            ans.push(*x);
+            sum -= x.1;
         }
     }
     return ans;
