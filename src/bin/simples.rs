@@ -1,6 +1,4 @@
-use std::io::{self,BufRead};
-
-
+use std::io::{self, BufRead};
 
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
@@ -47,22 +45,41 @@ fn supp(r: i64, p: i64) -> Vec<i64> {
 }
 
 fn wedge_greater_than(x: i64, y: i64, p: i64) -> bool {
-    let mut ans = true;
-    let n: Vec<i64> = convert_base_p(x, p);
-    let r: Vec<i64> = convert_base_p(y, p);
-    for i in 0..n.len() {
-        if r[i] > n[i] {
-            ans = false;
-            break;
+    let mut g: Vec<i64> = convert_base_p(x, p);
+    let mut h: Vec<i64> = convert_base_p(y, p);
+    if g.len()>h.len(){
+        let mut r= vec![0; g.len()-h.len()];
+        r.append(&mut h); 
+        h =r;
+    }
+    if g.len()<h.len(){
+        let mut r= vec![0; h.len()-g.len()];
+        r.append(&mut g); 
+        g =r;
+    }
+    for i in 0..g.len() {
+        if h[i] > g[i] {
+            return false;
         }
     }
-    return ans;
+    return true;
 }
 
 fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     let ans: i64;
     let mut g = convert_base_p((n + m) / 2, p);
     let mut h = convert_base_p(m, p);
+    if g.len()>h.len(){
+        let mut r= vec![0; g.len()-h.len()];
+        r.append(&mut h); 
+        h =r;
+    }
+    if g.len()<h.len(){
+        let mut r= vec![0; h.len()-g.len()];
+        r.append(&mut g); 
+        g =r;
+    }
+
     g.reverse();
     h.reverse();
     if (n - m) % 2 != 0 {
@@ -73,7 +90,7 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
         ans = -1;
     } else if p_adic_val((n + m) / 2, p) == p_adic_val(m, p)
         && wedge_greater_than((n + m) / 2, m, p)
-        && g[(p_adic_val(m, p) ) as usize] == h[(p_adic_val(m, p) ) as usize]
+        && g[(p_adic_val(m, p)) as usize] == h[(p_adic_val(m, p)) as usize]
     {
         ans = 1;
     } else {
@@ -83,7 +100,9 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
 }
 
 fn binom(n: i64, k: i64) -> i64 {
-    if k<0{ return 0;}
+    if k < 0 {
+        return 0;
+    }
     let mut res = 1;
     for i in 0..k {
         res = (res * (n - i)) / (i + 1);
@@ -93,7 +112,7 @@ fn binom(n: i64, k: i64) -> i64 {
 
 fn dimension(n: i64, m: i64, p: i64) -> i64 {
     let mut ans = 0;
-    for r in 0..((n - m) / 2)+1 {
+    for r in 0..((n - m) / 2) + 1 {
         ans += e_tilde(n - 2 * r + 1, m + 1, p) * (binom(n, r) - binom(n, r - 1));
     }
     return ans;
@@ -107,20 +126,19 @@ fn knapsack_count_sols(v: &Vec<(i64, i64)>, i: usize, sum: i64) -> i64 {
             return 0;
         }
     }
-  return knapsack_count_sols(&v, i + 1, sum) + knapsack_count_sols(v, i + 1, sum - v[i].1);
-
+    return knapsack_count_sols(&v, i + 1, sum) + knapsack_count_sols(v, i + 1, sum - v[i].1);
 }
 
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
-     for i in v { 
-     for x in v { 
-         if knapsack_count_sols(v, (i.1 + 1) as usize, sum - x.1) > 0 { 
-             ans.push(*x); 
-             sum -= x.1; 
-         } 
-     } 
- } 
+    for i in v {
+        for x in v {
+            if knapsack_count_sols(v, (i.1 + 1) as usize, sum - x.1) > 0 {
+                ans.push(*x);
+                sum -= x.1;
+            }
+        }
+    }
     return ans;
 }
 
@@ -134,7 +152,7 @@ fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
             }
         }
     }
-    
+
     let mut simples: Vec<(i64, i64)> = Vec::new();
     for k in &indicies {
         simples.push((*k, dimension(n, *k, p)));
@@ -146,25 +164,107 @@ fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
 }
 
 fn main() {
+
+
     println!("Enter m n p dim seperated by spaces");
     let reader = io::stdin();
-    let numbers: Vec<i64> = 
-        reader.lock()                           
-              .lines().next().unwrap().unwrap() 
-              .split(' ').map(|s| s.trim())     
-              .filter(|s| !s.is_empty())        
-              .map(|s| s.parse().unwrap())      
-              .collect();                       
-    
-    
+    let numbers: Vec<i64> = reader
+        .lock()
+        .lines()
+        .next()
+        .unwrap()
+        .unwrap()
+        .split(' ')
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.parse().unwrap())
+        .collect();
 
-
-    println!("simples \n{:?}", find_simples(numbers[0] , numbers[1], numbers[2], numbers[3] ));
+    println!(
+        "simples \n{:?}",
+        find_simples(numbers[0], numbers[1], numbers[2], numbers[3])
+    );
 
     //println!("e \n{:?}", e_tilde(5, 3, 2));
     //println!("e \n{:?}", (p_adic_val(3,2)-1)as usize);
-    
 
-    
-   // println!("dim \n{:?}", dimension(12, i, 2));}}
+    // println!("dim \n{:?}", dimension(12, i, 2));}}
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_convert_base_p() {
+        let v = vec![4, 2, 1];
+        assert_eq!(convert_base_p(7, 2), v);
+    }
+
+    #[test]
+    fn test_p_adic_val() {
+        assert_eq!(p_adic_val(54, 3), 3);
+    }
+
+    #[test]
+    fn test_supp() {
+        let v = vec![0, 2, 4, 6];
+        assert_eq!(supp(6, 2), v);
+    }
+
+    #[test]
+    fn test_wedge_greater_than() {
+        assert_eq!(wedge_greater_than(8, 5, 3), true);
+    }
+
+    #[test]
+    fn test_e_tilde() {
+        let e = vec![
+            vec![1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            vec![0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            vec![0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            vec![0, -1, 0, 1, 0, 0, 0, 0, 0, 0],
+            vec![-1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            vec![1, 0, 0, 0, -1, 0, 1, 0, 0, 0],
+            vec![0, 1, 0, -1, 0, 0, 0, 1, 0, 0],
+            vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            vec![0, -1, 0, 1, 0, 0, 0, -1, 0, 1],
+        ];
+        for i in 1..e.len() {
+            for j in 1..e.len() {
+                
+                assert_eq!(e[i-1][j-1], e_tilde(i as i64, j as i64, 3));
+            }
+           
+        }
+    }
+
+    #[test]
+    fn test_binom() {
+        assert_eq!(binom(6, 4), 15);
+        //negative
+        //0
+    }
+
+    #[test]
+    fn test_dimension() {
+        assert_eq!(dimension(6, 2, 2), 4);
+    }
+
+    #[test]
+    fn test_knapsack_count_sols() {
+        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
+        let w = vec![(0, 10), (1, 3), (2, 2), (3, 2)];
+        let sum = 13;
+        assert_eq!(knapsack_count_sols(&w, 0, sum), 1);
+    }
+
+    #[test]
+    fn test_knapsack_sols() {
+        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
+        let sum = 13;
+        assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
+    }
 }
