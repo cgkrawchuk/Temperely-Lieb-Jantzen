@@ -85,13 +85,13 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
                 identity_matrix[r][j] = identity_matrix[r][j] * mod_inverse;
             }
         }
-        for j in 0..row_count {
-            if j != r {
+        for j in r+1..row_count {
+           
                 let hold = matrix_out[j][pivot];
                 for k in 0..column_count {
                     matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k]);
                     identity_matrix[j][k] = identity_matrix[j][k] - (hold * identity_matrix[r][k]);
-                }
+                
             }
         }
         pivot = pivot + 1;
