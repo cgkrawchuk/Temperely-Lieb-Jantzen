@@ -159,60 +159,37 @@ fn reform_inner_product(new_basis: &Vec<Vec<i64>>, old_gram: &Vec<Vec<i64>>) -> 
 
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
-    //println!("gram matrix of {0}, {1} is :", m, n);
-    //println!("{:?}", &g);
-
+    
     let mut h = reduce_mod_p(&mut g, p);
-    //println!("Reduced mod {}", p);
-    //println!("{:?}", &h);
-
+    
     let (mut reduced_matrix, mut transform_matrix) = row_echelon_form(&mut h, p);
 
-    //println!("Row echelon form: \n{:?}", reduce_mod_p(&reduced_matrix, p));
-    //println!(
-    //     "transformation matrix:\n{:?}",
-    //    reduce_mod_p(&transform_matrix, p)
-    // );
-    let mut nzr = num_zero_rows(&reduced_matrix);
-    let mut rank = (reduced_matrix.len() as i64) - nzr;
-    println!("dimension of head is: {}", &rank);
-
-    while nzr != 0 as i64 {
+    loop{
+        let mut nzr = num_zero_rows(&reduced_matrix);
+        let mut rank = (reduced_matrix.len() as i64) - nzr;
+        println!("dimension of head is: {}", &rank);
+        if nzr ==0 { break;}
         let basis_of_rad = &transform_matrix[(rank as usize)..];
         let mut bor: Vec<Vec<i64>> = Vec::from(basis_of_rad);
-        // println!("new basis: {:?}", &basis_of_rad);
         g = reform_inner_product(&mut bor, &mut g);
-        //println!("new gram matrix: {:?}", &g);
         for i in 0..g.len() {
             for j in 0..g.len() {
                 g[i][j] = g[i][j] / p;
             }
         }
-        //println!("divide by p: \n{:?}", &g);
-
         h = reduce_mod_p(&mut g, p);
-        //println!("Reduced mod {}", p);
-        // println!("{:?}", &h);
-
         let (temp1, temp2) = row_echelon_form(&mut h, p);
         reduced_matrix = temp1;
         transform_matrix = temp2;
-
-        println!("Row echelon form: \n{:?}", reduce_mod_p(&reduced_matrix, p));
-        println!(
-            "transformation matrix:\n{:?}",
-            reduce_mod_p(&transform_matrix, p)
-        );
         nzr = num_zero_rows(&reduced_matrix);
         rank = (reduced_matrix.len() as i64) - nzr;
-        println!("dimension of head is: {}", rank);
+        }
     }
-}
+    
+
+
 
 fn main() {
-
-    
-    println!("{:?}",gram_matrix(7,3) );
     println!("Enter m n p seperated by spaces");
     let reader = io::stdin();
     let numbers: Vec<usize> = reader
