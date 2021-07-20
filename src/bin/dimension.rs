@@ -124,7 +124,7 @@ pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     return num_zeroes;
 }
 
-fn reform_inner_product(new_basis: &Vec<Vec<i64>>, old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> { 
     let mut matrix_out: Vec<Vec<i64>> = vec![vec![0; new_basis.len()]; new_basis.len()];
     for i in 0..new_basis.len() {
         for j in 0..new_basis.len() {
@@ -153,9 +153,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
         let  rank = (reduced_matrix.len() as i64) - nzr;
         println!("dimension of head is: {}", &rank);
         if nzr ==0 { break;}
-        let basis_of_rad = &transform_matrix[(rank as usize)..];
-        let mut bor: Vec<Vec<i64>> = Vec::from(basis_of_rad);
-        g = reform_inner_product(&mut bor, &mut g);
+        let basis_of_rad = &transform_matrix[(rank as usize)..]; 
+        g = reform_inner_product(basis_of_rad, &mut g);
         for i in 0..g.len() {
             for j in 0..g.len() {
                 g[i][j] = g[i][j] / p;
