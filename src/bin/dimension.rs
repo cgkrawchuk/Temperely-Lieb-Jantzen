@@ -31,13 +31,8 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
         for j in 0..x {
             let (a, b) = &(monic_diagrams[i].involute()) * &monic_diagrams[j];
             if b == TLDiagram::id(m) {
-                if a == 0 {
-                    gm[i][j] = 1
-                } else {
-                    gm[i][j] = (2 as i64).pow(a as u32);
-                }
-            } else {
-                gm[i][j] = 0;
+                gm[i][j] = (2 as i64).pow(a as u32);
+              
             }
         }
     }
@@ -53,7 +48,7 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
     let mut identity_matrix: Vec<Vec<i64>> =
         vec![vec![0; column_count as usize]; row_count as usize];
     for k in 0..row_count {
-        //hopefully row_count is less than column_count
+        
         identity_matrix[k][k] = 1;
     }
    
@@ -165,8 +160,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     let (mut reduced_matrix, mut transform_matrix) = row_echelon_form(&mut h, p);
 
     loop{
-        let mut nzr = num_zero_rows(&reduced_matrix);
-        let mut rank = (reduced_matrix.len() as i64) - nzr;
+        let  nzr = num_zero_rows(&reduced_matrix);
+        let  rank = (reduced_matrix.len() as i64) - nzr;
         println!("dimension of head is: {}", &rank);
         if nzr ==0 { break;}
         let basis_of_rad = &transform_matrix[(rank as usize)..];
@@ -181,8 +176,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
         let (temp1, temp2) = row_echelon_form(&mut h, p);
         reduced_matrix = temp1;
         transform_matrix = temp2;
-        nzr = num_zero_rows(&reduced_matrix);
-        rank = (reduced_matrix.len() as i64) - nzr;
+        
+        
         }
     }
     
