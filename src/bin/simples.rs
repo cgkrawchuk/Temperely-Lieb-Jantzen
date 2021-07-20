@@ -100,7 +100,7 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
 }
 
 fn binom(n: i64, k: i64) -> i64 {
-    if k < 0 {
+    if k < 0 || n < 0 {
         return 0;
     }
     let mut res = 1;
@@ -118,18 +118,18 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
-fn knapsack_count_sols(v: &[(i64, i64)], sum: i64) -> bool {
+fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     if v.is_empty() {
         sum == 0
     } else {
-        knapsack_count_sols(&v[1..], sum) | knapsack_count_sols(&v[1..], sum - v[0].1)
+        knapsack_sols_exists(&v[1..], sum) | knapsack_sols_exists(&v[1..], sum - v[0].1)
     }
 }
 
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
     for (n, x) in v.iter().enumerate() {
-        if knapsack_count_sols(&v[(n+1)..], sum - x.1) {
+        if knapsack_sols_exists(&v[(n+1)..], sum - x.1) {
             ans.push(*x);
             sum -= x.1;
         }
@@ -180,10 +180,7 @@ fn main() {
         find_simples(numbers[0], numbers[1], numbers[2], numbers[3])
     );
 
-    //println!("e \n{:?}", e_tilde(5, 3, 2));
-    //println!("e \n{:?}", (p_adic_val(3,2)-1)as usize);
 
-    // println!("dim \n{:?}", dimension(12, i, 2));}}
 }
 
 #[cfg(test)]
@@ -239,8 +236,9 @@ mod tests {
     #[test]
     fn test_binom() {
         assert_eq!(binom(6, 4), 15);
-        //negative
-        //0
+        assert_eq!(binom(-1,3),0 );
+         assert_eq!(binom(4,0),1 );
+        
     }
 
     #[test]
@@ -249,16 +247,16 @@ mod tests {
     }
 
     #[test]
-    fn test_knapsack_count_sols() {
+    fn test_knapsack_sols_exists() {
         let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
         let w = vec![(0, 10), (1, 3), (2, 2), (3, 2)];
         let sum = 13;
-        assert_eq!(knapsack_count_sols(&w, 0, sum), 1);
+        assert_eq!(knapsack_sols_exists(&w, sum), true);
     }
 
     #[test]
     fn test_knapsack_sols() {
-        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
+        let v = vec![(0, 1),  (0, 3), (0, 10)];
         let sum = 13;
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
     }
