@@ -1,8 +1,11 @@
 extern crate itertools;
 
+mod modInverse;
+
 use itertools::Itertools;
 use std::io::{self, BufRead};
 use temperley_lieb_cat::*;
+use crate::modInverse::mod_inv;
 
 pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {
@@ -108,21 +111,7 @@ pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
     return matrix_out;
 }
 
-fn mod_inv(a: i64, module: i64) -> i64 {
-    assert!(a % module != 0, "number is 0 mod...");
-    let mut mn = (module, a);
-    let mut xy = (0, 1);
 
-    while mn.1 != 0 {
-        xy = (xy.1, xy.0 - (mn.0 / mn.1) * xy.1);
-        mn = (mn.1, mn.0 % mn.1);
-    }
-
-    while xy.0 < 0 {
-        xy.0 += module;
-    }
-    xy.0
-}
 
 pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     let mut num_zeroes = 0;

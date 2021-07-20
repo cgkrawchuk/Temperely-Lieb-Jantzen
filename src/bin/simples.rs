@@ -1,4 +1,6 @@
 use std::io::{self, BufRead};
+mod binomial;
+use binomial::binom;
 
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
@@ -99,16 +101,6 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
-fn binom(n: i64, k: i64) -> i64 {
-    if k < 0 || n < 0 {
-        return 0;
-    }
-    let mut res = 1;
-    for i in 0..k {
-        res = (res * (n - i)) / (i + 1);
-    }
-    return res;
-}
 
 fn dimension(n: i64, m: i64, p: i64) -> i64 {
     let mut ans = 0;
