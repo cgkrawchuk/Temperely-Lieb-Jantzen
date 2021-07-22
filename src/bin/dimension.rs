@@ -178,11 +178,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_mod_inv() {
-        assert_eq!(mod_inv(3, 5), 2);
-    }
-
-    #[test]
     fn test_num_zero_rows() {
         let m = vec![
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

@@ -218,13 +218,6 @@ mod tests {
     }
 
     #[test]
-    fn test_binom() {
-        assert_eq!(binom(6, 4), 15);
-        assert_eq!(binom(-1, 3), 0);
-        assert_eq!(binom(4, 0), 1);
-    }
-
-    #[test]
     fn test_dimension() {
         assert_eq!(dimension(6, 2, 2), 4);
     }
@@ -244,3 +237,4 @@ mod tests {
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
     }
 }
+
