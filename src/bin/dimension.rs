@@ -50,8 +50,7 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
     for k in 0..row_count {
         identity_matrix[k][k] = 1;
     }
-
-    for r in 0..row_count {
+    'rowLoop: for r in 0..row_count {
         matrix_out = reduce_mod_p(&mut matrix_out, p);
         if column_count <= pivot {
             break;
@@ -64,7 +63,7 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
                 pivot = pivot + 1;
                 if column_count == pivot {
                     pivot = pivot - 1;
-                    break;
+                    break 'rowLoop;
                 }
             }
         }
@@ -72,20 +71,18 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
         identity_matrix.swap(r, i);
 
         let q = matrix_out[r][pivot];
-        let a = ((q % p) + p) % p;
 
-        if a != 0 {
-            let mod_inverse = mod_inv(a, p);
+        let mod_inverse = mod_inv(((q % p) + p) % p, p);
 
-            for j in r + 1..row_count {
-                let hold = matrix_out[j][pivot];
-                for k in 0..column_count {
-                    matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k] * mod_inverse);
-                    identity_matrix[j][k] =
-                        identity_matrix[j][k] - (hold * identity_matrix[r][k] * mod_inverse);
-                }
+        for j in r + 1..row_count {
+            let hold = matrix_out[j][pivot];
+            for k in 0..column_count {
+                matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k] * mod_inverse);
+                identity_matrix[j][k] =
+                    identity_matrix[j][k] - (hold * identity_matrix[r][k] * mod_inverse);
             }
         }
+
         pivot = pivot + 1;
     }
     (matrix_out, identity_matrix)
