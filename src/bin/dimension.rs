@@ -136,11 +136,10 @@ fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
 
-    let mut h = reduce_mod_p(&mut g, p);
-
-    let (mut reduced_matrix, mut transform_matrix) = row_echelon_form(&mut h, p);
-
     loop {
+        let mut h = reduce_mod_p(&mut g, p);
+        let (reduced_matrix, transform_matrix) = row_echelon_form(&mut h, p);
+
         let nzr = num_zero_rows(&reduced_matrix);
         let rank = (reduced_matrix.len() as i64) - nzr;
         println!("dimension of head is: {}", &rank);
@@ -154,10 +153,6 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 g[i][j] = g[i][j] / p;
             }
         }
-        h = reduce_mod_p(&mut g, p);
-        let (temp1, temp2) = row_echelon_form(&mut h, p);
-        reduced_matrix = temp1;
-        transform_matrix = temp2;
     }
 }
 
