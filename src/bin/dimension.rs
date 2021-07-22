@@ -1,10 +1,15 @@
 extern crate itertools;
 
 use itertools::Itertools;
-use std::io::{self, BufRead};
 use temperley_lieb_cat::*;
-use trial::mod_inv;
+use tl_jantzen::mod_inv;
 
+use std::env;
+
+/// Calculate the Gram matrix for a standard module
+///
+/// Calculates explicitly the Gram matrix (in the diagram
+/// basis) of the standard module S(n, m) with δ = 2.
 pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {
         for (c, i) in tab.iter().enumerate() {
@@ -157,31 +162,21 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
 }
 
 fn main() {
-    println!("Enter m n p seperated by spaces");
-    let reader = io::stdin();
-    let numbers: Vec<usize> = reader
-        .lock()
-        .lines()
-        .next()
-        .unwrap()
-        .unwrap()
-        .split(' ')
-        .map(|s| s.trim())
-        .filter(|s| !s.is_empty())
-        .map(|s| s.parse().unwrap())
-        .collect();
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 4 {
+        println!("Enter m n p seperated by spaces");
+        return;
+    }
+    let n: usize = args[1].parse().expect("Please enter an integer for n");
+    let m: usize = args[2].parse().expect("Please enter an integer for m");
+    let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
-    recursive_ops(numbers[0], numbers[1], numbers[2] as i64);
+    recursive_ops(n, m, p);
 }
 #[cfg(test)]
 mod tests {
 
     use super::*;
-
-    #[test]
-    fn test_mod_inv() {
-        assert_eq!(mod_inv(3, 5), 2);
-    }
 
     #[test]
     fn test_num_zero_rows() {
