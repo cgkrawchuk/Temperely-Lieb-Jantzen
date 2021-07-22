@@ -1,5 +1,5 @@
 use std::io::{self, BufRead};
-use trial::binom;
+use tl_jantzen::binom;
 
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);

@@ -3,7 +3,7 @@ extern crate itertools;
 use itertools::Itertools;
 use std::io::{self, BufRead};
 use temperley_lieb_cat::*;
-use trial::mod_inv;
+use tl_jantzen::mod_inv;
 
 use std::env;
 
