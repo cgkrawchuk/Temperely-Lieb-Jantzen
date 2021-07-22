@@ -6,6 +6,10 @@ use tl_jantzen::mod_inv;
 
 use std::env;
 
+/// Calculate the Gram matrix for a standard module
+///
+/// Calculates explicitly the Gram matrix (in the diagram
+/// basis) of the standard module S(n, m) with δ = 2.
 pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {
         for (c, i) in tab.iter().enumerate() {
