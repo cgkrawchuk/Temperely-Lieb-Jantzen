@@ -41,4 +41,13 @@ mod tests {
         assert_eq!(binom(-1, 3), 0);
         assert_eq!(binom(4, 0), 1);
     }
+
+    #[test]
+    fn binomial_symmetry() {
+        for n in 0..20 {
+            for m in -1..n / 2 {
+                assert_eq!(binom(n, m), binom(n, n - m));
+            }
+        }
+    }
 }
