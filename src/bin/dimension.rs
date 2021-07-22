@@ -1,11 +1,9 @@
 extern crate itertools;
 
-mod modInverse;
-
 use itertools::Itertools;
 use std::io::{self, BufRead};
 use temperley_lieb_cat::*;
-use crate::modInverse::mod_inv;
+use trial::mod_inv;
 
 pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     fn ok(tab: &Vec<usize>) -> bool {

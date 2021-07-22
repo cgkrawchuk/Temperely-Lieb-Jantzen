@@ -1,6 +1,5 @@
 use std::io::{self, BufRead};
-mod binomial;
-use binomial::binom;
+use trial::binom;
 
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
