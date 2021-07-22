@@ -1,3 +1,7 @@
+/// Calculate the binomial coefficients
+///
+/// Calculates $n$ choose $k$ where this is understood
+/// to be zero if $k<0$, $n<0$ or $n>k$.
 pub fn binom(n: i64, k: i64) -> i64 {
     if k < 0 || n < 0 {
         return 0;
