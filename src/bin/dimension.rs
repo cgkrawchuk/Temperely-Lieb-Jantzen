@@ -75,17 +75,15 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
         let a = ((q % p) + p) % p;
 
         if a != 0 {
-            let mod_inverse = mod_inv(((a % p) + p) % p, p);
-            for j in 0..column_count {
-                matrix_out[r][j] = matrix_out[r][j] * mod_inverse;
-                identity_matrix[r][j] = identity_matrix[r][j] * mod_inverse;
-            }
-        }
-        for j in r + 1..row_count {
-            let hold = matrix_out[j][pivot];
-            for k in 0..column_count {
-                matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k]);
-                identity_matrix[j][k] = identity_matrix[j][k] - (hold * identity_matrix[r][k]);
+            let mod_inverse = mod_inv(a, p);
+
+            for j in r + 1..row_count {
+                let hold = matrix_out[j][pivot];
+                for k in 0..column_count {
+                    matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k] * mod_inverse);
+                    identity_matrix[j][k] =
+                        identity_matrix[j][k] - (hold * identity_matrix[r][k] * mod_inverse);
+                }
             }
         }
         pivot = pivot + 1;
