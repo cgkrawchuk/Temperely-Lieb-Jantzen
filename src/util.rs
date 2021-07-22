@@ -9,7 +9,6 @@ pub fn binom(n: i64, k: i64) -> i64 {
     return res;
 }
 
-
 pub fn mod_inv(a: i64, module: i64) -> i64 {
     assert!(a % module != 0, "number is 0 mod...");
     let mut mn = (module, a);

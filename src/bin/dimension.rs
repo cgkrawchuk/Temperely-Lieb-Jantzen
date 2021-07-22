@@ -33,7 +33,6 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
             let (a, b) = &(monic_diagrams[i].involute()) * &monic_diagrams[j];
             if b == TLDiagram::id(m) {
                 gm[i][j] = (2 as i64).pow(a as u32);
-              
             }
         }
     }
@@ -49,10 +48,9 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
     let mut identity_matrix: Vec<Vec<i64>> =
         vec![vec![0; column_count as usize]; row_count as usize];
     for k in 0..row_count {
-        
         identity_matrix[k][k] = 1;
     }
-   
+
     for r in 0..row_count {
         matrix_out = reduce_mod_p(&mut matrix_out, p);
         if column_count <= pivot {
@@ -75,21 +73,19 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
 
         let q = matrix_out[r][pivot];
         let a = ((q % p) + p) % p;
-        
+
         if a != 0 {
-           let mod_inverse = mod_inv(((a % p) + p) % p, p);
-           for j in 0..column_count {
-             matrix_out[r][j] = matrix_out[r][j] * mod_inverse;
-             identity_matrix[r][j] = identity_matrix[r][j] * mod_inverse;
+            let mod_inverse = mod_inv(((a % p) + p) % p, p);
+            for j in 0..column_count {
+                matrix_out[r][j] = matrix_out[r][j] * mod_inverse;
+                identity_matrix[r][j] = identity_matrix[r][j] * mod_inverse;
             }
         }
-        for j in r+1..row_count {
-           
-                let hold = matrix_out[j][pivot];
-                for k in 0..column_count {
-                    matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k]);
-                    identity_matrix[j][k] = identity_matrix[j][k] - (hold * identity_matrix[r][k]);
-                
+        for j in r + 1..row_count {
+            let hold = matrix_out[j][pivot];
+            for k in 0..column_count {
+                matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k]);
+                identity_matrix[j][k] = identity_matrix[j][k] - (hold * identity_matrix[r][k]);
             }
         }
         pivot = pivot + 1;
@@ -109,8 +105,6 @@ pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
     return matrix_out;
 }
 
-
-
 pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     let mut num_zeroes = 0;
     let zero_vec = vec![0; matrix[0].len()];
@@ -122,7 +116,7 @@ pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     return num_zeroes;
 }
 
-fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> { 
+fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> {
     let mut matrix_out: Vec<Vec<i64>> = vec![vec![0; new_basis.len()]; new_basis.len()];
     for i in 0..new_basis.len() {
         for j in 0..new_basis.len() {
@@ -141,17 +135,19 @@ fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec
 
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
-    
+
     let mut h = reduce_mod_p(&mut g, p);
-    
+
     let (mut reduced_matrix, mut transform_matrix) = row_echelon_form(&mut h, p);
 
-    loop{
-        let  nzr = num_zero_rows(&reduced_matrix);
-        let  rank = (reduced_matrix.len() as i64) - nzr;
+    loop {
+        let nzr = num_zero_rows(&reduced_matrix);
+        let rank = (reduced_matrix.len() as i64) - nzr;
         println!("dimension of head is: {}", &rank);
-        if nzr ==0 { break;}
-        let basis_of_rad = &transform_matrix[(rank as usize)..]; 
+        if nzr == 0 {
+            break;
+        }
+        let basis_of_rad = &transform_matrix[(rank as usize)..];
         g = reform_inner_product(basis_of_rad, &mut g);
         for i in 0..g.len() {
             for j in 0..g.len() {
@@ -162,13 +158,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
         let (temp1, temp2) = row_echelon_form(&mut h, p);
         reduced_matrix = temp1;
         transform_matrix = temp2;
-        
-        
-        }
     }
-    
-
-
+}
 
 fn main() {
     println!("Enter m n p seperated by spaces");
@@ -228,22 +219,48 @@ mod tests {
     }
 
     #[test]
-    fn test_row_echelon_form(){
+    fn test_row_echelon_form() {
         let m = vec![
             vec![2, 0, -13, 0],
             vec![4, 1, 0, 0],
             vec![0, 8, 1, 0],
             vec![5, -1, 0, 1],
         ];
-        let ans = (vec![vec![1, 0, 1, 0], vec![0, 1, 2, 0], vec![0, 0, 0, 1], vec![0, 0, 0, 0]], vec![vec![2, 0, 0, 0], vec![-2, 1, 0, 0], vec![0, -2, 0, 1], vec![4, -2, 1, 0]]);
-    assert_eq!(row_echelon_form(&m,3),ans);
-
+        let ans = (
+            vec![
+                vec![1, 0, 1, 0],
+                vec![0, 1, 2, 0],
+                vec![0, 0, 0, 1],
+                vec![0, 0, 0, 0],
+            ],
+            vec![
+                vec![2, 0, 0, 0],
+                vec![-2, 1, 0, 0],
+                vec![0, -2, 0, 1],
+                vec![4, -2, 1, 0],
+            ],
+        );
+        assert_eq!(row_echelon_form(&m, 3), ans);
     }
 
     #[test]
-    fn test_gram_matrix(){
-        let m: Vec<Vec<i64>>= vec![vec![4, 2, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0, 0, 0], vec![2, 4, 2, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0], vec![0, 2, 4, 2, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0], vec![0, 0, 2, 4, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0], vec![2, 1, 0, 0, 4, 2, 0, 0, 1, 0, 0, 1, 0, 0], vec![1, 2, 1, 0, 2, 4, 2, 0, 2, 1, 0, 2, 0, 0], vec![0, 1, 2, 1, 0, 2, 4, 2, 1, 2, 1, 1, 0, 0], vec![0, 0, 1, 2, 0, 0, 2, 4, 0, 1, 2, 0, 0, 0], vec![2, 1, 0, 0, 1, 2, 1, 0, 4, 2, 0, 1, 0, 1], vec![0, 0, 0, 0, 0, 1, 2, 1, 2, 4, 2, 2, 1, 2], vec![0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 4, 1, 2, 1], vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1], vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2], vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4]];
-        assert_eq!(gram_matrix(7,3), m);
+    fn test_gram_matrix() {
+        let m: Vec<Vec<i64>> = vec![
+            vec![4, 2, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0, 0, 0],
+            vec![2, 4, 2, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0],
+            vec![0, 2, 4, 2, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0],
+            vec![0, 0, 2, 4, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0],
+            vec![2, 1, 0, 0, 4, 2, 0, 0, 1, 0, 0, 1, 0, 0],
+            vec![1, 2, 1, 0, 2, 4, 2, 0, 2, 1, 0, 2, 0, 0],
+            vec![0, 1, 2, 1, 0, 2, 4, 2, 1, 2, 1, 1, 0, 0],
+            vec![0, 0, 1, 2, 0, 0, 2, 4, 0, 1, 2, 0, 0, 0],
+            vec![2, 1, 0, 0, 1, 2, 1, 0, 4, 2, 0, 1, 0, 1],
+            vec![0, 0, 0, 0, 0, 1, 2, 1, 2, 4, 2, 2, 1, 2],
+            vec![0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 4, 1, 2, 1],
+            vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1],
+            vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2],
+            vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4],
+        ];
+        assert_eq!(gram_matrix(7, 3), m);
     }
-
 }

@@ -48,15 +48,15 @@ fn supp(r: i64, p: i64) -> Vec<i64> {
 fn wedge_greater_than(x: i64, y: i64, p: i64) -> bool {
     let mut g: Vec<i64> = convert_base_p(x, p);
     let mut h: Vec<i64> = convert_base_p(y, p);
-    if g.len()>h.len(){
-        let mut r= vec![0; g.len()-h.len()];
-        r.append(&mut h); 
-        h =r;
+    if g.len() > h.len() {
+        let mut r = vec![0; g.len() - h.len()];
+        r.append(&mut h);
+        h = r;
     }
-    if g.len()<h.len(){
-        let mut r= vec![0; h.len()-g.len()];
-        r.append(&mut g); 
-        g =r;
+    if g.len() < h.len() {
+        let mut r = vec![0; h.len() - g.len()];
+        r.append(&mut g);
+        g = r;
     }
     for i in 0..g.len() {
         if h[i] > g[i] {
@@ -70,15 +70,15 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     let ans: i64;
     let mut g = convert_base_p((n + m) / 2, p);
     let mut h = convert_base_p(m, p);
-    if g.len()>h.len(){
-        let mut r= vec![0; g.len()-h.len()];
-        r.append(&mut h); 
-        h =r;
+    if g.len() > h.len() {
+        let mut r = vec![0; g.len() - h.len()];
+        r.append(&mut h);
+        h = r;
     }
-    if g.len()<h.len(){
-        let mut r= vec![0; h.len()-g.len()];
-        r.append(&mut g); 
-        g =r;
+    if g.len() < h.len() {
+        let mut r = vec![0; h.len() - g.len()];
+        r.append(&mut g);
+        g = r;
     }
 
     g.reverse();
@@ -100,7 +100,6 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
-
 fn dimension(n: i64, m: i64, p: i64) -> i64 {
     let mut ans = 0;
     for r in 0..((n - m) / 2) + 1 {
@@ -120,7 +119,7 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
     for (n, x) in v.iter().enumerate() {
-        if knapsack_sols_exists(&v[(n+1)..], sum - x.1) {
+        if knapsack_sols_exists(&v[(n + 1)..], sum - x.1) {
             ans.push(*x);
             sum -= x.1;
         }
@@ -150,8 +149,6 @@ fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
 }
 
 fn main() {
-
-
     println!("Enter m n p dim seperated by spaces");
     let reader = io::stdin();
     let numbers: Vec<i64> = reader
@@ -170,8 +167,6 @@ fn main() {
         "simples \n{:?}",
         find_simples(numbers[0], numbers[1], numbers[2], numbers[3])
     );
-
-
 }
 
 #[cfg(test)]
@@ -217,19 +212,16 @@ mod tests {
         ];
         for i in 1..e.len() {
             for j in 1..e.len() {
-                
-                assert_eq!(e[i-1][j-1], e_tilde(i as i64, j as i64, 3));
+                assert_eq!(e[i - 1][j - 1], e_tilde(i as i64, j as i64, 3));
             }
-           
         }
     }
 
     #[test]
     fn test_binom() {
         assert_eq!(binom(6, 4), 15);
-        assert_eq!(binom(-1,3),0 );
-         assert_eq!(binom(4,0),1 );
-        
+        assert_eq!(binom(-1, 3), 0);
+        assert_eq!(binom(4, 0), 1);
     }
 
     #[test]
@@ -247,7 +239,7 @@ mod tests {
 
     #[test]
     fn test_knapsack_sols() {
-        let v = vec![(0, 1),  (0, 3), (0, 10)];
+        let v = vec![(0, 1), (0, 3), (0, 10)];
         let sum = 13;
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
     }
