@@ -237,4 +237,3 @@ mod tests {
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
     }
 }
-

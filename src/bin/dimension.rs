@@ -166,9 +166,9 @@ fn main() {
         println!("Enter m n p seperated by spaces");
         return;
     }
-    let n : usize = args[1].parse().expect("Please enter an integer for n");
-    let m : usize = args[2].parse().expect("Please enter an integer for m");
-    let p : i64 = args[3].parse().expect("Please enter an integer for p");
+    let n: usize = args[1].parse().expect("Please enter an integer for n");
+    let m: usize = args[2].parse().expect("Please enter an integer for m");
+    let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     recursive_ops(n, m, p);
 }
