@@ -57,7 +57,7 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     let column_count = matrix_out.cols;
     let mut rank = 0;
 
-    let mut identity_matrix = Matrix::identity(column_count);
+    let mut identity_matrix = Matrix::identity(row_count);
     'rowLoop: for r in 0..row_count {
         matrix_out = reduce_mod_p(&matrix_out, p);
 
@@ -88,6 +88,7 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
             for k in 0..column_count {
                 matrix_out[(j, k)] -= hold * matrix_out[(r, k)] * mod_inverse;
                 identity_matrix[(j, k)] -= hold * identity_matrix[(r, k)] * mod_inverse;
+            
             }
         }
         rank = r;
@@ -112,15 +113,14 @@ pub fn reduce_mod_p(matrix: &Matrix, p: i64) -> Matrix {
 
 /// This fn needs to be modified...
 fn reform_inner_product(new_basis: &[&[i64]], old_gram: &Matrix) -> Matrix {
-    let mut matrix_out = Matrix::new(new_basis.len(), new_basis.len());
-    for i in 0..new_basis.len() {
+    let mut matrix_out = Matrix::new( old_gram.rows,new_basis.len());
+    for i in 0..old_gram.rows {
         for j in 0..new_basis.len() {
             let mut inner = 0;
-            for k in 0..old_gram.rows {
-                for l in 0..old_gram.cols {
-                    inner += old_gram[(k, l)] * new_basis[i][k] * new_basis[j][l];
+            for k in 0..old_gram.cols {
+                inner += old_gram[(i, k)] * new_basis[j][k] ;
                 }
-            }
+            
             matrix_out[(i, j)] = inner;
         }
     }
@@ -128,15 +128,19 @@ fn reform_inner_product(new_basis: &[&[i64]], old_gram: &Matrix) -> Matrix {
     matrix_out
 }
 
+
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
-
+    
     loop {
+               
         let h = reduce_mod_p(&g, p);
         let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&h, p);
-
+        
+        println!("reduced matrix: {}", &reduced_matrix);
         println!("dimension of head is: {}", &rank);
+        
         if rank == reduced_matrix.cols {
             break;
         }
@@ -148,6 +152,7 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 g[(i, j)] /= p;
             }
         }
+        
     }
 }
 
@@ -186,6 +191,19 @@ mod tests {
         ]
         .into();
         assert_eq!(reduce_mod_p(&m, 3), n);
+    }
+
+    #[test]
+    fn test_num_zeroes(){
+        let m: Matrix = vec![
+            vec![2, 0, -13, 0],
+            vec![0, 0, 0, 0],
+            vec![0, 8, 1, 0],
+            vec![0, 0, 0, 0],
+        ]
+        .into();
+
+        assert_eq!(num_zero_rows(&m),2 );
     }
 
     #[test]
