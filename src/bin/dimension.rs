@@ -2,7 +2,7 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
-use tl_jantzen::mod_inv;
+use tl_jantzen::{mod_inv, Matrix};
 
 use std::env;
 
@@ -10,7 +10,7 @@ use std::env;
 ///
 /// Calculates explicitly the Gram matrix (in the diagram
 /// basis) of the standard module S(n, m) with δ = 2.
-pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
+pub fn gram_matrix(n: usize, m: usize) -> Matrix {
     fn ok(tab: &Vec<usize>) -> bool {
         for (c, i) in tab.iter().enumerate() {
             if *i < 2 * (c + 1) {
@@ -32,16 +32,16 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     }
 
     let x = monic_diagrams.len();
-    let mut gm: Vec<Vec<i64>> = vec![vec![0; x as usize]; x as usize];
+    let mut gm = Matrix::new(x, x);
     for i in 0..x {
         for j in 0..x {
             let (a, b) = &(monic_diagrams[i].involute()) * &monic_diagrams[j];
             if b == TLDiagram::id(m) {
-                gm[i][j] = (2 as i64).pow(a as u32);
+                gm[(i, j)] = (2 as i64).pow(a as u32);
             }
         }
     }
-    return gm;
+    gm
 }
 
 /// Calculate the row echelon form of a matrix
@@ -50,27 +50,23 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
 /// while performing the same operations on the identity matrix
 /// with the same dimensions. Returns both matricies. Division is 
 /// performed modulo the argument p
-pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>, usize) {
-    let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
+pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
+    let mut matrix_out = matrix.clone();
     let mut pivot = 0;
-    let row_count = matrix_out.len();
-    let column_count = matrix_out[0].len();
+    let row_count = matrix_out.rows;
+    let column_count = matrix_out.cols;
     let mut rank =0;
 
-    let mut identity_matrix: Vec<Vec<i64>> =
-        vec![vec![0; column_count as usize]; row_count as usize];
-    for k in 0..row_count {
-        identity_matrix[k][k] = 1;
-    }
+    let mut identity_matrix = Matrix::identity(column_count);
     'rowLoop: for r in 0..row_count {
-       
+        
         matrix_out = reduce_mod_p(&mut matrix_out, p);
 
         if column_count <= pivot {
             break;
         }
         let mut i = r;
-        while matrix_out[i][pivot] == 0 {
+        while matrix_out[(i, pivot)] == 0 {
             i = i + 1;
             if i == row_count {
                 i = r;
@@ -82,19 +78,19 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
             }
         }
 
-        matrix_out.swap(r, i);
-        identity_matrix.swap(r, i);
+        matrix_out.swap_rows(r, i);
+        identity_matrix.swap_rows(r, i);
 
         let q = matrix_out[r][pivot];
 
         let mod_inverse = mod_inv(((q % p) + p) % p, p);
 
         for j in r + 1..row_count {
-            let hold = matrix_out[j][pivot];
+            let hold = matrix_out[(j, pivot)];
             for k in 0..column_count {
-                matrix_out[j][k] = matrix_out[j][k] - (hold * matrix_out[r][k] * mod_inverse);
-                identity_matrix[j][k] =
-                    identity_matrix[j][k] - (hold * identity_matrix[r][k] * mod_inverse);
+                matrix_out[(j, k)] = matrix_out[(j, k)] - (hold * matrix_out[(r, k)] * mod_inverse);
+                identity_matrix[(j, k)] =
+                    identity_matrix[(j, k)] - (hold * identity_matrix[(r, k)] * mod_inverse);
             }
         }
          rank = r;
@@ -108,30 +104,28 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
 /// Reduces a matrix modulo p
 ///
 /// Reduces each entry in a matrix mod p. Returns the corresponding matrix
-pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
-    let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
-    let row_count = matrix_out.len();
-    let column_count = matrix_out[0].len();
-    for i in 0..row_count {
-        for j in 0..column_count {
-            matrix_out[i][j] = ((matrix_out[i][j] % p) + p) % p;
+pub fn reduce_mod_p(matrix: &Matrix, p: i64) -> Matrix {
+    let mut matrix_out = Matrix::new(matrix.rows, matrix.cols);
+    for i in 0..matrix.rows {
+        for j in 0..matrix.cols {
+            matrix_out[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
         }
     }
     return matrix_out;
 }
 
 /// This fn needs to be modified...
-fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-    let mut matrix_out: Vec<Vec<i64>> = vec![vec![0; new_basis.len()]; new_basis.len()];
+fn reform_inner_product(new_basis: &[&[i64]], old_gram: &Matrix) -> Matrix {
+    let mut matrix_out = Matrix::new(new_basis.len(), new_basis.len());
     for i in 0..new_basis.len() {
         for j in 0..new_basis.len() {
             let mut inner = 0;
-            for k in 0..old_gram.len() {
-                for l in 0..old_gram[0].len() {
-                    inner += old_gram[k][l] * new_basis[i][k] * new_basis[j][l];
+            for k in 0..old_gram.rows {
+                for l in 0..old_gram.cols {
+                    inner += old_gram[(k, l)] * new_basis[i][k] * new_basis[j][l];
                 }
             }
-            matrix_out[i][j] = inner;
+            matrix_out[(i, j)] = inner;
         }
     }
 
@@ -147,14 +141,15 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
         let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&mut h, p);
 
         println!("dimension of head is: {}", &rank);
-        if rank == reduced_matrix.len() {
+        if rank == reduced_matrix.cols {
             break;
         }
-        let basis_of_rad = &transform_matrix[(rank as usize)..];
+        let rows = transform_matrix.row_list();
+        let basis_of_rad = &rows[rank..];
         g = reform_inner_product(basis_of_rad, &mut g);
-        for i in 0..g.len() {
-            for j in 0..g.len() {
-                g[i][j] = g[i][j] / p;
+        for i in 0..g.rows {
+            for j in 0..g.cols {
+                g[(i, j)] = g[(i, j)] / p;
             }
         }
     }
@@ -196,45 +191,52 @@ mod tests {
 
     #[test]
     fn test_reduce_mod_p() {
-        let m = vec![
+        let m: Matrix = vec![
             vec![2, 0, -13, 0],
             vec![0, 1, 0, 0],
             vec![0, 0, 1, 0],
             vec![0, -1, 0, 1],
-        ];
+        ]
+        .into();
 
-        let n = vec![[2, 0, 2, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 2, 0, 1]];
+        let n: Matrix = vec![
+            vec![2, 0, 2, 0],
+            vec![0, 1, 0, 0],
+            vec![0, 0, 1, 0],
+            vec![0, 2, 0, 1],
+        ]
+        .into();
         assert_eq!(reduce_mod_p(&m, 3), n);
     }
 
     #[test]
     fn test_row_echelon_form() {
-        let m = vec![
+        let m : Matrix = vec![
             vec![2, 0, -13, 0],
             vec![4, 1, 0, 0],
             vec![0, 8, 1, 0],
             vec![5, -1, 0, 1],
-        ];
+        ].into();
         let ans = (
             vec![
                 vec![2, 0, 2, 0],
                 vec![0, 1, 2, 0],
                 vec![0, 0, 0, 1],
                 vec![0, 0, 0, 0],
-            ],
+            ].into(),
             vec![
                 vec![1, 0, 0, 0],
                 vec![-2, 1, 0, 0],
                 vec![0, -2, 0, 1],
                 vec![4, -2, 1, 0],
-            ],
+            ].into(),
         );
         assert_eq!(row_echelon_form(&m, 3), ans);
     }
 
     #[test]
     fn test_gram_matrix() {
-        let m: Vec<Vec<i64>> = vec![
+        let m: Matrix = vec![
             vec![4, 2, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0, 0, 0],
             vec![2, 4, 2, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0],
             vec![0, 2, 4, 2, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0],
@@ -249,7 +251,7 @@ mod tests {
             vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1],
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2],
             vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4],
-        ];
+        ].into();
         assert_eq!(gram_matrix(7, 3), m);
     }
 }

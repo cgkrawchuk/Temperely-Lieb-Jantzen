@@ -4,7 +4,7 @@ use tl_jantzen::binom;
 /// Converts an i64 into the vector of its digits in base p
 ///
 /// Returns the list of values of 'r' in base 'p'
-/// mutiplied by the corresponding power of p. The values are 
+/// mutiplied by the corresponding power of p. The values are
 /// given in descending order  
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
@@ -19,7 +19,7 @@ fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     return digits;
 }
 
-/// Calculates the 'p'-adic valuation of 'a' 
+/// Calculates the 'p'-adic valuation of 'a'
 ///
 /// Returns the highest power of 'p' that divides
 /// 'a'. Asserts that 'a' is not 0.
@@ -134,9 +134,9 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
 
 /// Checks for a solution to the knapsack problem
 ///
-/// Accepts a vector of pairs and checks if the sum of 
-/// the second entries of a subset of these pairs totals 
-/// to 'sum'. Returns TRUE if a solutions exists and 
+/// Accepts a vector of pairs and checks if the sum of
+/// the second entries of a subset of these pairs totals
+/// to 'sum'. Returns TRUE if a solutions exists and
 /// FALSE otherwise
 fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     if v.is_empty() {
@@ -148,7 +148,7 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
 
 /// Returns a solution to the knapsack problem if it exists
 ///
-/// Accepts a vector of pairs and returns a subset of these pairs if 
+/// Accepts a vector of pairs and returns a subset of these pairs if
 /// the sum of their second entry totals to 'sum'
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
@@ -163,7 +163,7 @@ fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
 
 /// Finds the simple modules in a Jantzen layer of a cell module of TLn
 ///
-/// Returns the indicies corresponding to simple modules in the Jantzen 
+/// Returns the indicies corresponding to simple modules in the Jantzen
 /// layer of dimension 'dim'
 fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
     let mut indicies: Vec<i64> = Vec::new();
