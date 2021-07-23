@@ -190,14 +190,14 @@ mod tests {
 
     #[test]
     fn test_row_echelon_form() {
-        let m: Matrix = vec![
+        let m1: Matrix = vec![
             vec![2, 0, -13, 0],
             vec![4, 1, 0, 0],
             vec![0, 8, 1, 0],
             vec![5, -1, 0, 1],
         ]
         .into();
-        let ans = (
+        let ans1 = (
             vec![
                 vec![2, 0, 2, 0],
                 vec![0, 1, 2, 0],
@@ -214,7 +214,33 @@ mod tests {
             .into(),
             3,
         );
-        assert_eq!(row_echelon_form(&m, 3), ans);
+        assert_eq!(row_echelon_form(&m1, 3), ans1);
+        let m2: Matrix = vec![
+            vec![4, 0, -3, 0],
+            vec![4, 1, 0, 5],
+            vec![0, 8, 1, 0],
+            
+        ].into();
+        let ans2 = (
+            vec![
+                vec![1, 0, 0, 0],
+                vec![0, 1, 0, 2],
+                vec![0, 0, 1, 2],
+                
+            ]
+            .into(),
+            vec![
+                vec![1, 0, 0, 0],
+                vec![-1, 1, 0, 0],
+                vec![2, -2, 1, 0],
+                vec![0,0,0,1]
+                
+            ]
+            .into(),
+            3,
+        );
+        assert_eq!(row_echelon_form(&m2, 3), ans2);
+
     }
 
     #[test]
