@@ -44,6 +44,12 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
     return gm;
 }
 
+/// Calculate the row echelon form of a matrix
+///
+/// Calculates the unreduced row echelon form of a matrix 
+/// while performing the same operations on the identity matrix
+/// with the same dimensions. Returns both matricies. Division is 
+/// performed modulo the argument p
 pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
     let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let mut pivot = 0;
@@ -93,6 +99,9 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
     (matrix_out, identity_matrix)
 }
 
+/// Reduces a matrix modulo p
+///
+/// Reduces each entry in a matrix mod p. Returns the corresponding matrix
 pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
     let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let row_count = matrix_out.len();
@@ -104,7 +113,7 @@ pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
     }
     return matrix_out;
 }
-
+/// This fn will be deleted...
 pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     let mut num_zeroes = 0;
     let zero_vec = vec![0; matrix[0].len()];
@@ -116,6 +125,7 @@ pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
     return num_zeroes;
 }
 
+/// This fn needs to be modified...
 fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec<Vec<i64>> {
     let mut matrix_out: Vec<Vec<i64>> = vec![vec![0; new_basis.len()]; new_basis.len()];
     for i in 0..new_basis.len() {
@@ -133,6 +143,7 @@ fn reform_inner_product(new_basis: &[Vec<i64>], old_gram: &Vec<Vec<i64>>) -> Vec
     matrix_out
 }
 
+/// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
 

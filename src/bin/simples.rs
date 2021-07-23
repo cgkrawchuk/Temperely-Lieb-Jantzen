@@ -1,6 +1,11 @@
 use std::io::{self, BufRead};
 use tl_jantzen::binom;
 
+/// Converts an i64 into the vector of its digits in base p
+///
+/// Returns the list of values of 'r' in base 'p'
+/// mutiplied by the corresponding power of p. The values are 
+/// given in descending order  
 fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     assert!(2 <= p);
     let mut digits: Vec<i64> = Vec::new();
@@ -14,6 +19,10 @@ fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     return digits;
 }
 
+/// Calculates the 'p'-adic valuation of 'a' 
+///
+/// Returns the highest power of 'p' that divides
+/// 'a'. Asserts that 'a' is not 0.
 fn p_adic_val(mut a: i64, p: i64) -> i64 {
     assert!(a != 0, "vp(0)=infinity");
     let mut index = 0;
@@ -24,6 +33,9 @@ fn p_adic_val(mut a: i64, p: i64) -> i64 {
     return index;
 }
 
+/// Calculates the value of Supp('r') with provided prime 'p'
+///
+/// Returns the vector of all values in the set Supp('r')
 fn supp(r: i64, p: i64) -> Vec<i64> {
     let digits: Vec<i64> = convert_base_p(r + 1, p);
     let mut set: Vec<i64> = Vec::new();
@@ -45,6 +57,10 @@ fn supp(r: i64, p: i64) -> Vec<i64> {
     return set;
 }
 
+/// Determines whether x is wedge-greater-than y
+///
+/// Returns TRUE if x is greater than y under the wedge
+// ordering and FALSE otherwise
 fn wedge_greater_than(x: i64, y: i64, p: i64) -> bool {
     let mut g: Vec<i64> = convert_base_p(x, p);
     let mut h: Vec<i64> = convert_base_p(y, p);
@@ -66,6 +82,10 @@ fn wedge_greater_than(x: i64, y: i64, p: i64) -> bool {
     return true;
 }
 
+/// Calculates the value e-tilde(n,m)
+///
+/// Returns -1, 0, or 1 according to the formula
+/// for e-tilde
 fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     let ans: i64;
     let mut g = convert_base_p((n + m) / 2, p);
@@ -100,6 +120,10 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
+/// Calculates the dimension of the simple module D(n,m)
+///
+/// Returns the integer dimension of the simple module
+/// indexed by 'n' and 'm' in characteristic 'p'
 fn dimension(n: i64, m: i64, p: i64) -> i64 {
     let mut ans = 0;
     for r in 0..((n - m) / 2) + 1 {
@@ -108,6 +132,12 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
     return ans;
 }
 
+/// Checks for a solution to the knapsack problem
+///
+/// Accepts a vector of pairs and checks if the sum of 
+/// the second entries of a subset of these pairs totals 
+/// to 'sum'. Returns TRUE if a solutions exists and 
+/// FALSE otherwise
 fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     if v.is_empty() {
         sum == 0
@@ -116,6 +146,10 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     }
 }
 
+/// Returns a solution to the knapsack problem if it exists
+///
+/// Accepts a vector of pairs and returns a subset of these pairs if 
+/// the sum of their second entry totals to 'sum'
 fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
     for (n, x) in v.iter().enumerate() {
@@ -127,6 +161,10 @@ fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
     return ans;
 }
 
+/// Finds the simple modules in a Jantzen layer of a cell module of TLn
+///
+/// Returns the indicies corresponding to simple modules in the Jantzen 
+/// layer of dimension 'dim'
 fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
     let mut indicies: Vec<i64> = Vec::new();
     for r in m..n + 1 {

@@ -12,7 +12,10 @@ pub fn binom(n: i64, k: i64) -> i64 {
     }
     return res;
 }
-
+/// Calculates the mod-inverse of 'a'
+///
+/// Calculates the multiplicative inverse of 'a' modulo 'module'
+/// Asserts that 'a' is not divisible by 'module'
 pub fn mod_inv(a: i64, module: i64) -> i64 {
     assert!(a % module != 0, "number is 0 mod...");
     let mut mn = (module, a);
