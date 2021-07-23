@@ -10,7 +10,7 @@ pub fn binom(n: i64, k: i64) -> i64 {
     for i in 0..k {
         res = (res * (n - i)) / (i + 1);
     }
-    return res;
+    res
 }
 /// Calculates the mod-inverse of 'a'
 ///

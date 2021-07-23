@@ -35,9 +35,9 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
     let mut gm = Matrix::new(x, x);
     for i in 0..x {
         for j in 0..x {
-            let (a, b) = &(monic_diagrams[i].involute()) * &monic_diagrams[j];
+            let (a, b) = (monic_diagrams[i].involute()) * monic_diagrams[j];
             if b == TLDiagram::id(m) {
-                gm[(i, j)] = (2 as i64).pow(a as u32);
+                gm[(i, j)] = (2_i64).pow(a as u32);
             }
         }
     }
@@ -59,19 +59,18 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
 
     let mut identity_matrix = Matrix::identity(column_count);
     'rowLoop: for r in 0..row_count {
-        matrix_out = reduce_mod_p(&mut matrix_out, p);
+        matrix_out = reduce_mod_p(&matrix_out, p);
 
         if column_count <= pivot {
             break;
         }
         let mut i = r;
         while matrix_out[(i, pivot)] == 0 {
-            i = i + 1;
+            i += 1;
             if i == row_count {
                 i = r;
-                pivot = pivot + 1;
+                pivot += 1;
                 if column_count == pivot {
-                    pivot = pivot - 1;
                     break 'rowLoop;
                 }
             }
@@ -87,16 +86,15 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
         for j in r + 1..row_count {
             let hold = matrix_out[(j, pivot)];
             for k in 0..column_count {
-                matrix_out[(j, k)] = matrix_out[(j, k)] - (hold * matrix_out[(r, k)] * mod_inverse);
-                identity_matrix[(j, k)] =
-                    identity_matrix[(j, k)] - (hold * identity_matrix[(r, k)] * mod_inverse);
+                matrix_out[(j, k)] -= hold * matrix_out[(r, k)] * mod_inverse;
+                identity_matrix[(j, k)] -= hold * identity_matrix[(r, k)] * mod_inverse;
             }
         }
         rank = r;
-        pivot = pivot + 1;
+        pivot += 1;
     }
 
-    return (matrix_out, identity_matrix, rank + 1);
+    (matrix_out, identity_matrix, rank + 1)
 }
 
 /// Reduces a matrix modulo p
@@ -109,7 +107,7 @@ pub fn reduce_mod_p(matrix: &Matrix, p: i64) -> Matrix {
             matrix_out[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
         }
     }
-    return matrix_out;
+    matrix_out
 }
 
 /// This fn needs to be modified...
@@ -135,8 +133,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
 
     loop {
-        let mut h = reduce_mod_p(&mut g, p);
-        let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&mut h, p);
+        let h = reduce_mod_p(&g, p);
+        let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&h, p);
 
         println!("dimension of head is: {}", &rank);
         if rank == reduced_matrix.cols {
@@ -144,10 +142,10 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
         }
         let rows = transform_matrix.row_list();
         let basis_of_rad = &rows[rank..];
-        g = reform_inner_product(basis_of_rad, &mut g);
+        g = reform_inner_product(basis_of_rad, &g);
         for i in 0..g.rows {
             for j in 0..g.cols {
-                g[(i, j)] = g[(i, j)] / p;
+                g[(i, j)] /= p;
             }
         }
     }

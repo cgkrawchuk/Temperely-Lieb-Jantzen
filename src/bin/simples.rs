@@ -12,11 +12,11 @@ fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
     let mut index = 0;
     while r > 0 {
         digits.push((r % p) * (p.pow(index as u32)));
-        r = r / p;
+        r /= p;
         index += 1;
     }
     digits.reverse();
-    return digits;
+    digits
 }
 
 /// Calculates the 'p'-adic valuation of 'a'
@@ -27,10 +27,10 @@ fn p_adic_val(mut a: i64, p: i64) -> i64 {
     assert!(a != 0, "vp(0)=infinity");
     let mut index = 0;
     while a % p == 0 {
-        a = a / p;
+        a /= p;
         index += 1;
     }
-    return index;
+    index
 }
 
 /// Calculates the value of Supp('r') with provided prime 'p'
@@ -54,7 +54,7 @@ fn supp(r: i64, p: i64) -> Vec<i64> {
     }
     set.sort_unstable();
     set.dedup();
-    return set;
+    set
 }
 
 /// Determines whether x is wedge-greater-than y
@@ -79,7 +79,7 @@ fn wedge_greater_than(x: i64, y: i64, p: i64) -> bool {
             return false;
         }
     }
-    return true;
+    true
 }
 
 /// Calculates the value e-tilde(n,m)
@@ -117,7 +117,7 @@ fn e_tilde(n: i64, m: i64, p: i64) -> i64 {
     } else {
         ans = 0;
     }
-    return ans;
+    ans
 }
 
 /// Calculates the dimension of the simple module D(n,m)
@@ -129,7 +129,7 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
     for r in 0..((n - m) / 2) + 1 {
         ans += e_tilde(n - 2 * r + 1, m + 1, p) * (binom(n, r) - binom(n, r - 1));
     }
-    return ans;
+    ans
 }
 
 /// Checks for a solution to the knapsack problem
@@ -150,7 +150,7 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
 ///
 /// Accepts a vector of pairs and returns a subset of these pairs if
 /// the sum of their second entry totals to 'sum'
-fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
+fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
     for (n, x) in v.iter().enumerate() {
         if knapsack_sols_exists(&v[(n + 1)..], sum - x.1) {
@@ -158,7 +158,7 @@ fn knapsack_sols(v: &Vec<(i64, i64)>, mut sum: i64) -> Vec<(i64, i64)> {
             sum -= x.1;
         }
     }
-    return ans;
+    ans
 }
 
 /// Finds the simple modules in a Jantzen layer of a cell module of TLn
@@ -183,7 +183,7 @@ fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
 
     let ans: Vec<(i64, i64)> = knapsack_sols(&simples, dim);
 
-    return ans;
+    ans
 }
 
 fn main() {

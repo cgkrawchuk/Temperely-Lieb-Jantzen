@@ -99,7 +99,10 @@ impl core::fmt::Display for Matrix {
             for col in 0..self.cols {
                 write!(f, " {:3}", self[(row, col)])?;
             }
-            write!(f, "]\n")?;
+            write!(f, "]")?;
+            if row < self.rows - 1 {
+                writeln!(f)?;
+            }
         }
         Ok(())
     }
