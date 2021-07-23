@@ -46,20 +46,19 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
 
 /// Calculate the row echelon form of a matrix
 ///
-/// Calculates the unreduced row echelon form of a matrix 
+/// Calculates the unreduced row echelon form of a matrix
 /// while performing the same operations on the identity matrix
-/// with the same dimensions. Returns both matricies. Division is 
+/// with the same dimensions. Returns both matricies. Division is
 /// performed modulo the argument p
 pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     let mut matrix_out = matrix.clone();
     let mut pivot = 0;
     let row_count = matrix_out.rows;
     let column_count = matrix_out.cols;
-    let mut rank =0;
+    let mut rank = 0;
 
     let mut identity_matrix = Matrix::identity(column_count);
     'rowLoop: for r in 0..row_count {
-        
         matrix_out = reduce_mod_p(&mut matrix_out, p);
 
         if column_count <= pivot {
@@ -93,12 +92,11 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
                     identity_matrix[(j, k)] - (hold * identity_matrix[(r, k)] * mod_inverse);
             }
         }
-         rank = r;
+        rank = r;
         pivot = pivot + 1;
-
     }
-    
-    return (matrix_out, identity_matrix, rank+1);
+
+    return (matrix_out, identity_matrix, rank + 1);
 }
 
 /// Reduces a matrix modulo p
@@ -211,25 +209,28 @@ mod tests {
 
     #[test]
     fn test_row_echelon_form() {
-        let m : Matrix = vec![
+        let m: Matrix = vec![
             vec![2, 0, -13, 0],
             vec![4, 1, 0, 0],
             vec![0, 8, 1, 0],
             vec![5, -1, 0, 1],
-        ].into();
+        ]
+        .into();
         let ans = (
             vec![
                 vec![2, 0, 2, 0],
                 vec![0, 1, 2, 0],
                 vec![0, 0, 0, 1],
                 vec![0, 0, 0, 0],
-            ].into(),
+            ]
+            .into(),
             vec![
                 vec![1, 0, 0, 0],
                 vec![-2, 1, 0, 0],
                 vec![0, -2, 0, 1],
                 vec![4, -2, 1, 0],
-            ].into(),
+            ]
+            .into(),
         );
         assert_eq!(row_echelon_form(&m, 3), ans);
     }
@@ -251,7 +252,8 @@ mod tests {
             vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1],
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2],
             vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4],
-        ].into();
+        ]
+        .into();
         assert_eq!(gram_matrix(7, 3), m);
     }
 }
