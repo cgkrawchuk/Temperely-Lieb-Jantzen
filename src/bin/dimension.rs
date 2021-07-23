@@ -169,23 +169,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_num_zero_rows() {
-        let m = vec![
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            vec![0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-            vec![0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-            vec![0, -1, 0, 1, 0, 0, 0, 0, 0, 0],
-            vec![-1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            vec![1, 0, 0, 0, -1, 0, 1, 0, 0, 0],
-            vec![0, 1, 0, -1, 0, 0, 0, 1, 0, 0],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-            vec![0, -1, 0, 1, 0, 0, 0, -1, 0, 1],
-        ];
-        assert_eq!(num_zero_rows(&m), 2);
-    }
-
-    #[test]
     fn test_reduce_mod_p() {
         let m: Matrix = vec![
             vec![2, 0, -13, 0],
@@ -229,6 +212,7 @@ mod tests {
                 vec![4, -2, 1, 0],
             ]
             .into(),
+            3,
         );
         assert_eq!(row_echelon_form(&m, 3), ans);
     }
