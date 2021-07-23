@@ -50,11 +50,12 @@ pub fn gram_matrix(n: usize, m: usize) -> Vec<Vec<i64>> {
 /// while performing the same operations on the identity matrix
 /// with the same dimensions. Returns both matricies. Division is 
 /// performed modulo the argument p
-pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
+pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>, usize) {
     let mut matrix_out: Vec<Vec<i64>> = matrix.to_vec();
     let mut pivot = 0;
     let row_count = matrix_out.len();
     let column_count = matrix_out[0].len();
+    let mut rank =0;
 
     let mut identity_matrix: Vec<Vec<i64>> =
         vec![vec![0; column_count as usize]; row_count as usize];
@@ -62,7 +63,9 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
         identity_matrix[k][k] = 1;
     }
     'rowLoop: for r in 0..row_count {
+       
         matrix_out = reduce_mod_p(&mut matrix_out, p);
+
         if column_count <= pivot {
             break;
         }
@@ -78,6 +81,7 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
                 }
             }
         }
+
         matrix_out.swap(r, i);
         identity_matrix.swap(r, i);
 
@@ -93,10 +97,12 @@ pub fn row_echelon_form(matrix: &Vec<Vec<i64>>, p: i64) -> (Vec<Vec<i64>>, Vec<V
                     identity_matrix[j][k] - (hold * identity_matrix[r][k] * mod_inverse);
             }
         }
-
+         rank = r;
         pivot = pivot + 1;
+
     }
-    (matrix_out, identity_matrix)
+    
+    return (matrix_out, identity_matrix, rank+1);
 }
 
 /// Reduces a matrix modulo p
@@ -112,17 +118,6 @@ pub fn reduce_mod_p(matrix: &Vec<Vec<i64>>, p: i64) -> Vec<Vec<i64>> {
         }
     }
     return matrix_out;
-}
-/// This fn will be deleted...
-pub fn num_zero_rows(matrix: &Vec<Vec<i64>>) -> i64 {
-    let mut num_zeroes = 0;
-    let zero_vec = vec![0; matrix[0].len()];
-    for x in matrix.iter() {
-        if x == &zero_vec {
-            num_zeroes += 1;
-        }
-    }
-    return num_zeroes;
 }
 
 /// This fn needs to be modified...
@@ -149,12 +144,10 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
 
     loop {
         let mut h = reduce_mod_p(&mut g, p);
-        let (reduced_matrix, transform_matrix) = row_echelon_form(&mut h, p);
+        let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&mut h, p);
 
-        let nzr = num_zero_rows(&reduced_matrix);
-        let rank = (reduced_matrix.len() as i64) - nzr;
         println!("dimension of head is: {}", &rank);
-        if nzr == 0 {
+        if rank == reduced_matrix.len() {
             break;
         }
         let basis_of_rad = &transform_matrix[(rank as usize)..];
