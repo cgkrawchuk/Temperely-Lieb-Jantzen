@@ -112,7 +112,7 @@ impl core::fmt::Display for Matrix {
 mod test {
     use super::*;
 
-    fn interesting_matrix(rows : usize, cols : usize) -> Matrix {
+    fn interesting_matrix(rows: usize, cols: usize) -> Matrix {
         let mut matrix = Matrix::new(rows, cols);
         for r in 0..rows {
             for c in 0..cols {
@@ -177,7 +177,7 @@ mod test {
 
         for (r, row) in list.iter().enumerate() {
             for c in 0..cols {
-                    assert_eq!(row[c] as usize, r * cols + c);
+                assert_eq!(row[c] as usize, r * cols + c);
             }
         }
     }
@@ -190,7 +190,7 @@ mod test {
 
         for r in 0..rows {
             for c in 0..cols {
-                assert_eq!(matrix[r][c], matrix[(r,c)]);
+                assert_eq!(matrix[r][c], matrix[(r, c)]);
             }
         }
     }

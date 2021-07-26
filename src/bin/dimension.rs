@@ -88,7 +88,6 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
             for k in 0..column_count {
                 matrix_out[(j, k)] -= hold * matrix_out[(r, k)] * mod_inverse;
                 identity_matrix[(j, k)] -= hold * identity_matrix[(r, k)] * mod_inverse;
-            
             }
         }
         rank = r;
@@ -111,14 +110,14 @@ pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
 
 /// This fn needs to be modified...
 fn reform_inner_product(new_basis: &[&[i64]], old_gram: &Matrix) -> Matrix {
-    let mut matrix_out = Matrix::new( old_gram.rows,new_basis.len());
+    let mut matrix_out = Matrix::new(old_gram.rows, new_basis.len());
     for i in 0..old_gram.rows {
         for j in 0..new_basis.len() {
             let mut inner = 0;
             for k in 0..old_gram.cols {
-                inner += old_gram[(i, k)] * new_basis[j][k] ;
-                }
-            
+                inner += old_gram[(i, k)] * new_basis[j][k];
+            }
+
             matrix_out[(i, j)] = inner;
         }
     }
@@ -126,20 +125,18 @@ fn reform_inner_product(new_basis: &[&[i64]], old_gram: &Matrix) -> Matrix {
     matrix_out
 }
 
-
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
-    
+
     loop {
-               
         let mut h = g.clone();
         reduce_mod_p(&mut h, p);
         let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&h, p);
-        
+
         println!("reduced matrix: {}", &reduced_matrix);
         println!("dimension of head is: {}", &rank);
-        
+
         if rank == reduced_matrix.cols {
             break;
         }
@@ -151,7 +148,6 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 g[(i, j)] /= p;
             }
         }
-        
     }
 }
 
@@ -174,7 +170,7 @@ mod tests {
 
     #[test]
     fn test_reduce_mod_p() {
-        let mut m : Matrix = vec![
+        let mut m: Matrix = vec![
             vec![2, 0, -13, 0],
             vec![0, 1, 0, 0],
             vec![0, 0, 1, 0],
@@ -189,7 +185,7 @@ mod tests {
             vec![0, 2, 0, 1],
         ]
         .into();
-        reduce_mod_p(&mut m,3);
+        reduce_mod_p(&mut m, 3);
         assert_eq!(m, n);
     }
 
@@ -220,32 +216,19 @@ mod tests {
             3,
         );
         assert_eq!(row_echelon_form(&m1, 3), ans1);
-        let m2: Matrix = vec![
-            vec![4, 0, -3, 0],
-            vec![4, 1, 0, 5],
-            vec![0, 8, 1, 0],
-            
-        ].into();
+        let m2: Matrix = vec![vec![4, 0, -3, 0], vec![4, 1, 0, 5], vec![0, 8, 1, 0]].into();
         let ans2 = (
-            vec![
-                vec![1, 0, 0, 0],
-                vec![0, 1, 0, 2],
-                vec![0, 0, 1, 2],
-                
-            ]
-            .into(),
+            vec![vec![1, 0, 0, 0], vec![0, 1, 0, 2], vec![0, 0, 1, 2]].into(),
             vec![
                 vec![1, 0, 0, 0],
                 vec![-1, 1, 0, 0],
                 vec![2, -2, 1, 0],
-                vec![0,0,0,1]
-                
+                vec![0, 0, 0, 1],
             ]
             .into(),
             3,
         );
         assert_eq!(row_echelon_form(&m2, 3), ans2);
-
     }
 
     #[test]
