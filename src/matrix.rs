@@ -83,6 +83,22 @@ impl core::convert::From<Vec<Vec<i64>>> for Matrix {
     }
 }
 
+impl core::convert::From<&[&[i64]]> for Matrix {
+    fn from(other: &[&[i64]]) -> Matrix {
+        let rows = other.len();
+        assert!(rows > 0);
+        let cols = other[0].len();
+        let mut ans = Matrix::new(rows, cols);
+        for row in 0..rows {
+            assert_eq!(cols, other[row].len());
+            for col in 0..cols {
+                ans[(row, col)] = other[row][col];
+            }
+        }
+        ans
+    }
+}
+
 impl core::ops::Index<usize> for Matrix {
     type Output = [i64];
 
@@ -92,12 +108,86 @@ impl core::ops::Index<usize> for Matrix {
     }
 }
 
+impl core::ops::Add<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn add(self, rhs: Matrix) -> Matrix {
+        assert_eq!(
+            self.rows, rhs.rows,
+            "Cannot add matrices of different sizes"
+        );
+        assert_eq!(
+            self.cols, rhs.cols,
+            "Cannot add matrices of different sizes"
+        );
+        Matrix {
+            data: self.data.iter().zip(rhs.data).map(|(x, y)| x + y).collect(),
+            ..self
+        }
+    }
+}
+
+impl core::ops::Sub<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn sub(self, rhs: Matrix) -> Matrix {
+        assert_eq!(
+            self.rows, rhs.rows,
+            "Cannot subtract matrices of different sizes"
+        );
+        assert_eq!(
+            self.cols, rhs.cols,
+            "Cannot subtract matrices of different sizes"
+        );
+        Matrix {
+            data: self.data.iter().zip(rhs.data).map(|(x, y)| x - y).collect(),
+            ..self
+        }
+    }
+}
+
+impl core::ops::Mul<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Matrix) -> Matrix {
+        self * &rhs
+    }
+}
+
+impl core::ops::Mul<&Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: &Matrix) -> Matrix {
+        &self * rhs
+    }
+}
+
+impl core::ops::Mul<&Matrix> for &Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: &Matrix) -> Matrix {
+        assert_eq!(
+            self.cols, rhs.rows,
+            "Cannot multiply mismatched matrices"
+        );
+        let mut ans = Matrix::new(self.rows, rhs.cols);
+        for i in 0..self.rows {
+            for j in 0..rhs.cols {
+                for k in 0..self.cols {
+                    ans[(i,j)] += self[(i,k)] * rhs[(k,j)]
+                }
+            }
+        }
+        ans
+    }
+}
+
 impl core::fmt::Display for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         for row in 0..self.rows {
             write!(f, "[")?;
             for col in 0..self.cols {
-                write!(f, " {:3}", self[(row, col)])?;
+                write!(f, " {:2}", self[(row, col)])?;
             }
             write!(f, "]")?;
             if row < self.rows - 1 {
@@ -193,5 +283,74 @@ mod test {
                 assert_eq!(matrix[r][c], matrix[(r, c)]);
             }
         }
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_add() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![5,4,7],
+            vec![0,4,1],
+            vec![9,10,18],
+
+        ].into();
+            assert_eq!(a + b, c);
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_sub() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![-3,0,-1],
+            vec![-2,-6,-1],
+            vec![-3,6,0],
+
+        ].into();
+            assert_eq!(a - b, c);
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_mul() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![24,18,33],
+            vec![-5,-7,-5],
+            vec![74,64,101],
+
+        ].into();
+            assert_eq!(a * b, c);
     }
 }
