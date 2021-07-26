@@ -107,3 +107,91 @@ impl core::fmt::Display for Matrix {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn interesting_matrix(rows : usize, cols : usize) -> Matrix {
+        let mut matrix = Matrix::new(rows, cols);
+        for r in 0..rows {
+            for c in 0..cols {
+                matrix[(r, c)] = (r * cols + c) as i64;
+            }
+        }
+        matrix
+    }
+    #[test]
+    fn new_matrix() {
+        let rows = 10;
+        let cols = 12;
+        let matrix = Matrix::new(rows, cols);
+        for r in 0..rows {
+            for c in 0..cols {
+                assert_eq!(matrix[(r, c)], 0);
+            }
+        }
+    }
+
+    #[test]
+    fn identity_matrix() {
+        let rows = 10;
+        let matrix = Matrix::identity(rows);
+        for r in 0..rows {
+            for c in 0..rows {
+                if r == c {
+                    assert_eq!(matrix[(r, c)], 1);
+                } else {
+                    assert_eq!(matrix[(r, c)], 0);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn swap_matrix_rows() {
+        let rows = 10;
+        let cols = 8;
+        let mut matrix = interesting_matrix(rows, cols);
+
+        matrix.swap_rows(4, 7);
+
+        for r in 0..rows {
+            for c in 0..cols {
+                match r {
+                    4 => assert_eq!(matrix[(r, c)] as usize, 7 * cols + c),
+                    7 => assert_eq!(matrix[(r, c)] as usize, 4 * cols + c),
+                    r => assert_eq!(matrix[(r, c)] as usize, r * cols + c),
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn matrix_row_list() {
+        let rows = 10;
+        let cols = 8;
+        let matrix = interesting_matrix(rows, cols);
+
+        let list = matrix.row_list();
+
+        for (r, row) in list.iter().enumerate() {
+            for c in 0..cols {
+                    assert_eq!(row[c] as usize, r * cols + c);
+            }
+        }
+    }
+
+    #[test]
+    fn matrix_indexing() {
+        let rows = 10;
+        let cols = 8;
+        let matrix = interesting_matrix(rows, cols);
+
+        for r in 0..rows {
+            for c in 0..cols {
+                assert_eq!(matrix[r][c], matrix[(r,c)]);
+            }
+        }
+    }
+}
