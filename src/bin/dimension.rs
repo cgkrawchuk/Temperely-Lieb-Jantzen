@@ -59,7 +59,7 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
 
     let mut identity_matrix = Matrix::identity(row_count);
     'rowLoop: for r in 0..row_count {
-        matrix_out = reduce_mod_p(&matrix_out, p);
+        reduce_mod_p(&mut matrix_out, p);
 
         if column_count <= pivot {
             break;
@@ -100,15 +100,13 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
 
 /// Reduces a matrix modulo p
 ///
-/// Reduces each entry in a matrix mod p. Returns the corresponding matrix
-pub fn reduce_mod_p(matrix: &Matrix, p: i64) -> Matrix {
-    let mut matrix_out = Matrix::new(matrix.rows, matrix.cols);
+/// Reduces each entry in a matrix mod p in-place.
+pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
     for i in 0..matrix.rows {
         for j in 0..matrix.cols {
-            matrix_out[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
+            matrix[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
         }
     }
-    matrix_out
 }
 
 /// This fn needs to be modified...
@@ -135,7 +133,8 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     
     loop {
                
-        let h = reduce_mod_p(&g, p);
+        let mut h = g.clone();
+        reduce_mod_p(&mut h, p);
         let (reduced_matrix, transform_matrix, rank) = row_echelon_form(&h, p);
         
         println!("reduced matrix: {}", &reduced_matrix);
@@ -175,7 +174,7 @@ mod tests {
 
     #[test]
     fn test_reduce_mod_p() {
-        let m: Matrix = vec![
+        let mut m : Matrix = vec![
             vec![2, 0, -13, 0],
             vec![0, 1, 0, 0],
             vec![0, 0, 1, 0],
@@ -190,20 +189,8 @@ mod tests {
             vec![0, 2, 0, 1],
         ]
         .into();
-        assert_eq!(reduce_mod_p(&m, 3), n);
-    }
-
-    #[test]
-    fn test_num_zeroes(){
-        let m: Matrix = vec![
-            vec![2, 0, -13, 0],
-            vec![0, 0, 0, 0],
-            vec![0, 8, 1, 0],
-            vec![0, 0, 0, 0],
-        ]
-        .into();
-
-        assert_eq!(num_zero_rows(&m),2 );
+        reduce_mod_p(&mut m,3);
+        assert_eq!(m, n);
     }
 
     #[test]
