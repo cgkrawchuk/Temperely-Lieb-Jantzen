@@ -39,6 +39,15 @@ impl Matrix {
         }
     }
 
+    /// Swap two columns of this matrix in-place
+    pub fn swap_cols(&mut self, i: usize, j: usize) {
+        // TODO (robert) : this is inefficient again.  See about using
+        // compiler built in swap.
+        for k in 0..self.rows {
+            self.data.swap(k * self.cols + i, k * self.cols + j);
+        }
+    }
+
     /// Get a list of slices into the rows
     pub fn row_list(&self) -> Vec<&[i64]> {
         let mut ans = Vec::new();
