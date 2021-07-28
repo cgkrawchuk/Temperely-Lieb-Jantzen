@@ -193,18 +193,7 @@ mod tests {
         assert_eq!(reduce_mod_p(&m, 3), n);
     }
 
-    #[test]
-    fn test_num_zeroes(){
-        let m: Matrix = vec![
-            vec![2, 0, -13, 0],
-            vec![0, 0, 0, 0],
-            vec![0, 8, 1, 0],
-            vec![0, 0, 0, 0],
-        ]
-        .into();
 
-        assert_eq!(num_zero_rows(&m),2 );
-    }
 
     #[test]
     fn test_row_echelon_form() {

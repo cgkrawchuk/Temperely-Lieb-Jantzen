@@ -29,6 +29,19 @@ impl Matrix {
         }
         ans
     }
+    //add n times row i to row j to acheive a new row j
+    pub fn add_rows(&mut self, n:i64 ,i:usize, j:usize ){
+        for k in 0..self.cols{
+            self.data[j*self.cols+k] = self.data[j*self.cols+k]+n*self.data[i*self.cols+k];
+        }
+    }
+
+    //add n times col i to col j to acheive a new col j
+    pub fn add_cols(&mut self, n:i64 ,i:usize, j:usize ){
+        for k in 0..self.rows{
+            self.data[k*self.cols+j] = self.data[k*self.cols+j]+n*self.data[k*self.cols+i];
+        }
+    }
 
     /// Swap two rows of this matrix in-place
     pub fn swap_rows(&mut self, i: usize, j: usize) {
@@ -36,6 +49,14 @@ impl Matrix {
         // compiler built in swap.
         for k in 0..self.cols {
             self.data.swap(i * self.cols + k, j * self.cols + k);
+        }
+    }
+
+    pub fn swap_cols(&mut self, i: usize, j: usize) {
+        // TODO (robert) : this is inefficient again.  See about using
+        // compiler built in swap.
+        for k in 0..self.rows {
+            self.data.swap(k * self.cols + i, k * self.cols + j);
         }
     }
 
