@@ -185,6 +185,8 @@ impl core::ops::Mul<&Matrix> for Matrix {
     }
 }
 
+
+
 impl core::ops::Mul<&Matrix> for &Matrix {
     type Output = Matrix;
 
