@@ -29,6 +29,25 @@ impl Matrix {
         }
         ans
     }
+
+    /// Swap two rows of this matrix in-place
+    pub fn swap_rows(&mut self, i: usize, j: usize) {
+        // TODO (robert) : this is inefficient again.  See about using
+        // compiler built in swap.
+        for k in 0..self.cols {
+            self.data.swap(i * self.cols + k, j * self.cols + k);
+        }
+    }
+
+    /// Swap two columns of this matrix in-place
+    pub fn swap_cols(&mut self, i: usize, j: usize) {
+        // TODO (robert) : this is inefficient again.  See about using
+        // compiler built in swap.
+        for k in 0..self.rows {
+            self.data.swap(k * self.cols + i, k * self.cols + j);
+        }
+    }
+
     //add n times row i to row j to acheive a new row j
     pub fn add_rows(&mut self, n:i64 ,i:usize, j:usize ){
         for k in 0..self.cols{
@@ -40,23 +59,6 @@ impl Matrix {
     pub fn add_cols(&mut self, n:i64 ,i:usize, j:usize ){
         for k in 0..self.rows{
             self.data[k*self.cols+j] = self.data[k*self.cols+j]+n*self.data[k*self.cols+i];
-        }
-    }
-
-    /// Swap two rows of this matrix in-place
-    pub fn swap_rows(&mut self, i: usize, j: usize) {
-        // TODO (robert) : this is inefficient again.  See about using
-        // compiler built in swap.
-        for k in 0..self.cols {
-            self.data.swap(i * self.cols + k, j * self.cols + k);
-        }
-    }
-
-    pub fn swap_cols(&mut self, i: usize, j: usize) {
-        // TODO (robert) : this is inefficient again.  See about using
-        // compiler built in swap.
-        for k in 0..self.rows {
-            self.data.swap(k * self.cols + i, k * self.cols + j);
         }
     }
 
@@ -104,6 +106,22 @@ impl core::convert::From<Vec<Vec<i64>>> for Matrix {
     }
 }
 
+impl core::convert::From<&[&[i64]]> for Matrix {
+    fn from(other: &[&[i64]]) -> Matrix {
+        let rows = other.len();
+        assert!(rows > 0);
+        let cols = other[0].len();
+        let mut ans = Matrix::new(rows, cols);
+        for row in 0..rows {
+            assert_eq!(cols, other[row].len());
+            for col in 0..cols {
+                ans[(row, col)] = other[row][col];
+            }
+        }
+        ans
+    }
+}
+
 impl core::ops::Index<usize> for Matrix {
     type Output = [i64];
 
@@ -113,12 +131,86 @@ impl core::ops::Index<usize> for Matrix {
     }
 }
 
+impl core::ops::Add<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn add(self, rhs: Matrix) -> Matrix {
+        assert_eq!(
+            self.rows, rhs.rows,
+            "Cannot add matrices of different sizes"
+        );
+        assert_eq!(
+            self.cols, rhs.cols,
+            "Cannot add matrices of different sizes"
+        );
+        Matrix {
+            data: self.data.iter().zip(rhs.data).map(|(x, y)| x + y).collect(),
+            ..self
+        }
+    }
+}
+
+impl core::ops::Sub<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn sub(self, rhs: Matrix) -> Matrix {
+        assert_eq!(
+            self.rows, rhs.rows,
+            "Cannot subtract matrices of different sizes"
+        );
+        assert_eq!(
+            self.cols, rhs.cols,
+            "Cannot subtract matrices of different sizes"
+        );
+        Matrix {
+            data: self.data.iter().zip(rhs.data).map(|(x, y)| x - y).collect(),
+            ..self
+        }
+    }
+}
+
+impl core::ops::Mul<Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Matrix) -> Matrix {
+        self * &rhs
+    }
+}
+
+impl core::ops::Mul<&Matrix> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: &Matrix) -> Matrix {
+        &self * rhs
+    }
+}
+
+impl core::ops::Mul<&Matrix> for &Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: &Matrix) -> Matrix {
+        assert_eq!(
+            self.cols, rhs.rows,
+            "Cannot multiply mismatched matrices"
+        );
+        let mut ans = Matrix::new(self.rows, rhs.cols);
+        for i in 0..self.rows {
+            for j in 0..rhs.cols {
+                for k in 0..self.cols {
+                    ans[(i,j)] += self[(i,k)] * rhs[(k,j)]
+                }
+            }
+        }
+        ans
+    }
+}
+
 impl core::fmt::Display for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         for row in 0..self.rows {
             write!(f, "[")?;
             for col in 0..self.cols {
-                write!(f, " {:3}", self[(row, col)])?;
+                write!(f, " {:2}", self[(row, col)])?;
             }
             write!(f, "]")?;
             if row < self.rows - 1 {
@@ -126,5 +218,162 @@ impl core::fmt::Display for Matrix {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn interesting_matrix(rows: usize, cols: usize) -> Matrix {
+        let mut matrix = Matrix::new(rows, cols);
+        for r in 0..rows {
+            for c in 0..cols {
+                matrix[(r, c)] = (r * cols + c) as i64;
+            }
+        }
+        matrix
+    }
+    #[test]
+    fn new_matrix() {
+        let rows = 10;
+        let cols = 12;
+        let matrix = Matrix::new(rows, cols);
+        for r in 0..rows {
+            for c in 0..cols {
+                assert_eq!(matrix[(r, c)], 0);
+            }
+        }
+    }
+
+    #[test]
+    fn identity_matrix() {
+        let rows = 10;
+        let matrix = Matrix::identity(rows);
+        for r in 0..rows {
+            for c in 0..rows {
+                if r == c {
+                    assert_eq!(matrix[(r, c)], 1);
+                } else {
+                    assert_eq!(matrix[(r, c)], 0);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn swap_matrix_rows() {
+        let rows = 10;
+        let cols = 8;
+        let mut matrix = interesting_matrix(rows, cols);
+
+        matrix.swap_rows(4, 7);
+
+        for r in 0..rows {
+            for c in 0..cols {
+                match r {
+                    4 => assert_eq!(matrix[(r, c)] as usize, 7 * cols + c),
+                    7 => assert_eq!(matrix[(r, c)] as usize, 4 * cols + c),
+                    r => assert_eq!(matrix[(r, c)] as usize, r * cols + c),
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn matrix_row_list() {
+        let rows = 10;
+        let cols = 8;
+        let matrix = interesting_matrix(rows, cols);
+
+        let list = matrix.row_list();
+
+        for (r, row) in list.iter().enumerate() {
+            for c in 0..cols {
+                assert_eq!(row[c] as usize, r * cols + c);
+            }
+        }
+    }
+
+    #[test]
+    fn matrix_indexing() {
+        let rows = 10;
+        let cols = 8;
+        let matrix = interesting_matrix(rows, cols);
+
+        for r in 0..rows {
+            for c in 0..cols {
+                assert_eq!(matrix[r][c], matrix[(r, c)]);
+            }
+        }
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_add() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![5,4,7],
+            vec![0,4,1],
+            vec![9,10,18],
+
+        ].into();
+            assert_eq!(a + b, c);
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_sub() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![-3,0,-1],
+            vec![-2,-6,-1],
+            vec![-3,6,0],
+
+        ].into();
+            assert_eq!(a - b, c);
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn matrix_mul() {
+        let a : Matrix = vec![
+            vec![1,2,3],
+            vec![-1,-1,0],
+            vec![3,8,9],
+
+        ].into();
+        let b : Matrix = vec![
+            vec![4,2,4],
+            vec![1,5,1],
+            vec![6,2,9],
+        ].into();
+        let c : Matrix = vec![
+            vec![24,18,33],
+            vec![-5,-7,-5],
+            vec![74,64,101],
+
+        ].into();
+            assert_eq!(a * b, c);
     }
 }
