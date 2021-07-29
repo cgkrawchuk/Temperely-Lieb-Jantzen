@@ -33,6 +33,10 @@ pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
     return (old_r, old_s, old_t);
 }
 
+///Calculates the smith normal form of A 
+///
+///Calculates the snf of A (done in place) and returns the invertible matricies
+/// S and T such that S*(snf(A))*T=A
 pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
     let mut S = Matrix::identity(A.rows);
     let mut T = Matrix::identity(A.cols);
@@ -125,7 +129,7 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     L_inverse[(k, t)] = -1 * tao;
                     L_inverse[(t, k)] = gamma;
                     L_inverse[(k, k)] = sigma;
-
+                    
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
                     let mut m: Matrix = Matrix::identity(A.cols);
                     for i in 0..A.cols {
@@ -139,6 +143,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                         }
                     }
                     *A = m;
+                    
+
                     T = L_inverse * T;
 
                     made_changes = true;
