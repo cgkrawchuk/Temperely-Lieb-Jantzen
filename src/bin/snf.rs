@@ -135,17 +135,38 @@ fn main() {
     println!("s is: {}", s);
     println!("t is: {}", t);
 
-    a = vec![vec![2, 4, 4], vec![-6, 6, 12], vec![10, 4, 16]].into();
-    let (s, t) = snf(&mut a);
-    println!("a is: {}", a);
-    println!("s is: {}", s);
-    println!("t is: {}", t);
+
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn test_snf(){
+        let mut a: Matrix = vec![vec![-4, -6, 7], vec![2, 2, 4], vec![6, 6, 15]].into();
+        let (s, t) = snf(&mut a);
+
+        let snf_a: Matrix = vec![vec![2, 0, 0], vec![0, 1, 0], vec![0, 0, 6]].into();
+        let snf_s: Matrix = vec![vec![-2, -1, 0], vec![1, 0, 0], vec![3, -3, 1]].into();
+        let snf_t: Matrix = vec![vec![1, 1, 2], vec![0, 2, -15], vec![0, 1, -7]].into();
+
+        assert_eq!(a, snf_a);
+        assert_eq!(s, snf_s);
+        assert_eq!(t, snf_t);
+
+        a = vec![vec![2, 4, 4], vec![-6, 6, 12], vec![10, 4, 16]].into();
+        let (s, t) = snf(&mut a);
+
+        let snf_a: Matrix = vec![vec![2, 0, 0], vec![0, 2, 0], vec![0, 0, 156]].into();
+        let snf_s: Matrix = vec![vec![1, 0, 0], vec![-3, 9, -1], vec![5, -8, 1]].into();
+        let snf_t: Matrix = vec![vec![1, 2, 2], vec![0, 1, 10], vec![0, 0, 1]].into();
+
+        assert_eq!(a, snf_a);
+        assert_eq!(s, snf_s);
+        assert_eq!(t, snf_t);
+    }
 
     
 }
