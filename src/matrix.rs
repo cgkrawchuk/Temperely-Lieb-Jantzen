@@ -49,18 +49,17 @@ impl Matrix {
     }
 
     /// Adds n times row i to row j to acheive a new row j
-    pub fn add_rows(&mut self, n: i64, i: usize, j: usize) {
+    pub fn add_multiple_rowi_to_rowj(&mut self, n: i64, i: usize, j: usize) {
         for k in 0..self.cols {
-            self.data[j * self.cols + k] =
-                self.data[j * self.cols + k] + n * self.data[i * self.cols + k];
+            self.data[j * self.cols + k] +=
+                 n * self.data[i * self.cols + k];
         }
     }
 
     /// Adds n times column i to col jumn to acheive a new col j
-    pub fn add_cols(&mut self, n: i64, i: usize, j: usize) {
+    pub fn add_multiple_coli_to_colj(&mut self, n: i64, i: usize, j: usize) {
         for k in 0..self.rows {
-            self.data[k * self.cols + j] =
-                self.data[k * self.cols + j] + n * self.data[k * self.cols + i];
+            self.data[k * self.cols + j] += n * self.data[k * self.cols + i];
         }
     }
 

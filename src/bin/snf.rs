@@ -48,8 +48,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     continue;
                 } else if b % a == 0 {
                     let n = b / a;
-                    A.add_rows(-1 * n, t, k);
-                    S.add_cols(n, k, t);
+                    A.add_multiple_rowi_to_rowj(-1 * n, t, k);
+                    S.add_multiple_coli_to_colj(n, k, t);
                 } else {
                     let (gcd, sigma, tao) = extended_euclid(a, b);
 
@@ -79,8 +79,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     continue;
                 } else if b % a == 0 {
                     let n = b / a;
-                    A.add_cols(-1 * n, t, k);
-                    T.add_rows(n, k, t);
+                    A.add_multiple_coli_to_colj(-1 * n, t, k);
+                    T.add_multiple_rowi_to_rowj(n, k, t);
                     made_changes = true;
                 } else {
                     let (gcd, sigma, tao) = extended_euclid(a, b);
