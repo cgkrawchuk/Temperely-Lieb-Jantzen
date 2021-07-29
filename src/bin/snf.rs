@@ -100,10 +100,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     L_inverse[(k, k)] = sigma;
                     
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
-                    let mut m: Matrix = Matrix::identity(A.cols);
-                    for i in 0..A.cols {
-                        m[(i, i)] = 0;
-                    }
+                    let mut m: Matrix = Matrix::new(A.cols,A.cols);
+                    
                     for i in 0..A.rows {
                         for j in 0..A.cols {
                             for k in 0..A.cols {
