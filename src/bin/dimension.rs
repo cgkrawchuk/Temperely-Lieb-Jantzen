@@ -53,7 +53,6 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
 pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     let mut matrix_out = matrix.clone();
     let mut pivot_row = 0;
-    
 
     let mut identity_matrix = Matrix::identity(matrix.rows);
 
@@ -92,8 +91,6 @@ pub fn row_echelon_form(matrix: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     reduce_mod_p(&mut identity_matrix, p);
     (matrix_out, identity_matrix, pivot_row)
 }
-
-
 
 /// Reduces a matrix modulo p
 ///

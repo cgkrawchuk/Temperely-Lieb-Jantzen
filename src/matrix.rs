@@ -49,16 +49,18 @@ impl Matrix {
     }
 
     //add n times row i to row j to acheive a new row j
-    pub fn add_rows(&mut self, n:i64 ,i:usize, j:usize ){
-        for k in 0..self.cols{
-            self.data[j*self.cols+k] = self.data[j*self.cols+k]+n*self.data[i*self.cols+k];
+    pub fn add_rows(&mut self, n: i64, i: usize, j: usize) {
+        for k in 0..self.cols {
+            self.data[j * self.cols + k] =
+                self.data[j * self.cols + k] + n * self.data[i * self.cols + k];
         }
     }
 
     //add n times col i to col j to acheive a new col j
-    pub fn add_cols(&mut self, n:i64 ,i:usize, j:usize ){
-        for k in 0..self.rows{
-            self.data[k*self.cols+j] = self.data[k*self.cols+j]+n*self.data[k*self.cols+i];
+    pub fn add_cols(&mut self, n: i64, i: usize, j: usize) {
+        for k in 0..self.rows {
+            self.data[k * self.cols + j] =
+                self.data[k * self.cols + j] + n * self.data[k * self.cols + i];
         }
     }
 
@@ -185,21 +187,16 @@ impl core::ops::Mul<&Matrix> for Matrix {
     }
 }
 
-
-
 impl core::ops::Mul<&Matrix> for &Matrix {
     type Output = Matrix;
 
     fn mul(self, rhs: &Matrix) -> Matrix {
-        assert_eq!(
-            self.cols, rhs.rows,
-            "Cannot multiply mismatched matrices"
-        );
+        assert_eq!(self.cols, rhs.rows, "Cannot multiply mismatched matrices");
         let mut ans = Matrix::new(self.rows, rhs.cols);
         for i in 0..self.rows {
             for j in 0..rhs.cols {
                 for k in 0..self.cols {
-                    ans[(i,j)] += self[(i,k)] * rhs[(k,j)]
+                    ans[(i, j)] += self[(i, k)] * rhs[(k, j)]
                 }
             }
         }

@@ -1,7 +1,8 @@
+use tl_jantzen::Matrix;
 
-use tl_jantzen::{ Matrix};
-
-
+///Function for extended euclidian algorithm
+///
+/// Returns the gcd of x and y and the corresponding Bezout coefficients
 pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
     let mut s = 0;
     let mut old_s = 1;
@@ -67,8 +68,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
             let mut made_changes = false;
 
             for k in t + 1..A.rows {
-                let  a = A[(t, t)];
-                let  b = A[(k, t)];
+                let a = A[(t, t)];
+                let b = A[(k, t)];
 
                 if b == 0 {
                     continue;
@@ -98,8 +99,8 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
             }
 
             for k in t + 1..A.cols {
-                let  a = A[(t, t)];
-                let  b = A[(t, k)];
+                let a = A[(t, t)];
+                let b = A[(t, k)];
 
                 if b == 0 {
                     continue;
@@ -132,7 +133,6 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     }
                     for i in 0..A.rows {
                         for j in 0..A.cols {
-                           
                             for k in 0..A.cols {
                                 m[(i, j)] += A[(i, k)] * L[(k, j)];
                             }
@@ -160,7 +160,6 @@ fn main() {
     println!("s is: {}", s);
     println!("t is: {}", t);
 
-    
     a = vec![vec![2, 4, 4], vec![-6, 6, 12], vec![10, 4, 16]].into();
     let (s, t) = snf(&mut a);
     println!("a is: {}", a);
@@ -180,6 +179,4 @@ mod tests {
         assert_eq!(extended_euclid(120, 428860), (20, 3574, -1));
         assert_eq!(extended_euclid(95642, 1681), (1, 682, -38803));
     }
-
-
 }
