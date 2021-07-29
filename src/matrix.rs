@@ -48,7 +48,7 @@ impl Matrix {
         }
     }
 
-    //add n times row i to row j to acheive a new row j
+    /// Adds n times row i to row j to acheive a new row j
     pub fn add_rows(&mut self, n: i64, i: usize, j: usize) {
         for k in 0..self.cols {
             self.data[j * self.cols + k] =
@@ -56,7 +56,7 @@ impl Matrix {
         }
     }
 
-    //add n times col i to col j to acheive a new col j
+    /// Adds n times column i to col jumn to acheive a new col j
     pub fn add_cols(&mut self, n: i64, i: usize, j: usize) {
         for k in 0..self.rows {
             self.data[k * self.cols + j] =
