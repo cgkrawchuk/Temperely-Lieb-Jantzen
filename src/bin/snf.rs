@@ -1,37 +1,6 @@
-use tl_jantzen::Matrix;
+use tl_jantzen::{Matrix,extended_euclid};
 
-///Function for extended euclidian algorithm
-///
-/// Returns the gcd of x and y and the corresponding Bezout coefficients
-pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
-    let mut s = 0;
-    let mut old_s = 1;
-    let mut t = 1;
-    let mut old_t = 0;
-    let mut r = y;
-    let mut old_r = x;
-    let mut temp;
-    while r != 0 {
-        let quotient = old_r / r;
-        temp = r;
-        r = old_r - quotient * r;
-        old_r = temp;
 
-        temp = s;
-        s = old_s - quotient * s;
-        old_s = temp;
-
-        temp = t;
-        t = old_t - quotient * t;
-        old_t = temp;
-    }
-    if old_r < 0 {
-        old_r = old_r * (-1);
-        old_s = old_s * (-1);
-        old_t = old_t * (-1);
-    }
-    return (old_r, old_s, old_t);
-}
 
 ///Calculates the smith normal form of A 
 ///
@@ -178,11 +147,5 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_extended_euclid() {
-        assert_eq!(extended_euclid(24, 18), (6, 1, -1));
-        assert_eq!(extended_euclid(54, 36), (18, 1, -1));
-        assert_eq!(extended_euclid(120, 428860), (20, 3574, -1));
-        assert_eq!(extended_euclid(95642, 1681), (1, 682, -38803));
-    }
+    
 }
