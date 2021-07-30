@@ -188,7 +188,10 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     if v.is_empty() {
         sum == 0
     } else {
-        knapsack_sols_exists(&v[1..], sum) | knapsack_sols_exists(&v[1..], sum - v[0].1)
+        let with_first = knapsack_sols_exists(&v[1..], sum - v[0].1);
+        let without_first = knapsack_sols_exists(&v[1..], sum);
+        assert!(!(with_first & without_first), "multiple solutions");
+        with_first | without_first
     }
 }
 
@@ -198,6 +201,7 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
 /// the sum of their second entry totals to 'sum'
 fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
+    knapsack_sols_exists(&v, sum );
     for (n, x) in v.iter().enumerate() {
         if knapsack_sols_exists(&v[(n + 1)..], sum - x.1) {
             ans.push(*x);
