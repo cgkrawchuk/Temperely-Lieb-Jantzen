@@ -229,25 +229,15 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 
     let mut dimensions = Vec::<i64>::new();
 
-    let mut index = 0;
-
-    let mut last = -1;
-
-    for x in 0..elem_divisors.len() {
-        if last != p_adic_val(elem_divisors[x], p) && x != 0 {
-            dimensions.push(index);
-            last = p_adic_val(elem_divisors[x], p);
-            index = 1;
-        } else if x == 0 {
-            last = p_adic_val(elem_divisors[x], p);
-            index = 1;
-        } else if x == elem_divisors.len() - 1 {
-            dimensions.push(index + 1);
-        } else {
-            index += 1;
-        }
+    let mut elem_divisors_valuation = Vec::new();
+    for n in elem_divisors.iter() {
+        elem_divisors_valuation.push( p_adic_val(*n, p) );
     }
-    //println!("{:?}", dimensions);
+    let max_layer = *elem_divisors_valuation.iter().max().unwrap();
+    for layer in 0..=max_layer {
+        // TODO (colin) Dimensions should probably be usizes everywhere
+        dimensions.push(elem_divisors_valuation.iter().filter(|n| **n == layer).count() as i64);
+    }
 
     let mut indicies: Vec<i64> = Vec::new();
     for r in n..m + 1 {
