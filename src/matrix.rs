@@ -289,7 +289,7 @@ mod test {
     fn test_add_rows() {
         let mut mat: Matrix = Matrix::identity(3);
         let ans: Matrix = vec![vec![1, 0, 0], vec![3, 1, 0], vec![0, 0, 1]].into();
-        mat.add_rows(3, 0, 1);
+        mat.add_multiple_rowi_to_rowj(3, 0, 1);
         assert_eq!(mat, ans);
     }
 
@@ -297,7 +297,7 @@ mod test {
     fn test_add_cols() {
         let mut mat: Matrix = Matrix::identity(3);
         let ans: Matrix = vec![vec![1, 0, 0], vec![-2, 1, 0], vec![0, 0, 1]].into();
-        mat.add_cols(-2, 1, 0);
+        mat.add_multiple_coli_to_colj(-2, 1, 0);
         assert_eq!(mat, ans);
     }
 

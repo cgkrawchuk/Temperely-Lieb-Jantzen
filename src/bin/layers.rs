@@ -207,7 +207,6 @@ fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
     ans
 }
 
-
 pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
     //println!("gram matrix is: {}", g);
@@ -260,8 +259,6 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
     for k in &indicies {
         simples.push((*k, dimension(m, *k, p)));
     }
-        
-    
 
     for y in dimensions {
         println!("layer has dimension: {:?}", y);
@@ -270,12 +267,10 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 
         println!("simples are: {:?}", ans);
 
-        for z in ans{
-        let index = simples.iter().position(|x| *x == z).unwrap();
-        simples.remove(index);
-    }
-
-        
+        for z in ans {
+            let index = simples.iter().position(|x| *x == z).unwrap();
+            simples.remove(index);
+        }
     }
 }
 
