@@ -207,30 +207,6 @@ fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
     ans
 }
 
-/// Finds the simple modules in a Jantzen layer of a cell module of TLn
-///
-/// Returns the indicies corresponding to simple modules in the Jantzen
-/// layer of dimension 'dim'
-fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
-    let mut indicies: Vec<i64> = Vec::new();
-    for r in m..n + 1 {
-        if (n - r) % 2 == 0 {
-            let support: Vec<i64> = supp(r, p);
-            if support.contains(&m) {
-                indicies.push(r);
-            }
-        }
-    }
-
-    let mut simples: Vec<(i64, i64)> = Vec::new();
-    for k in &indicies {
-        simples.push((*k, dimension(n, *k, p)));
-    }
-
-    let ans: Vec<(i64, i64)> = knapsack_sols(&simples, dim);
-
-    ans
-}
 
 pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
@@ -270,9 +246,36 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
     }
     //println!("{:?}", dimensions);
 
-    for x in dimensions {
-        println!("layer has dimension: {:?}", x);
-        println!("simples are: {:?}", find_simples(m, n, p, x as i64));
+    let mut indicies: Vec<i64> = Vec::new();
+    for r in n..m + 1 {
+        if (m - r) % 2 == 0 {
+            let support: Vec<i64> = supp(r, p);
+            if support.contains(&n) {
+                indicies.push(r);
+            }
+        }
+    }
+
+    let mut simples: Vec<(i64, i64)> = Vec::new();
+    for k in &indicies {
+        simples.push((*k, dimension(m, *k, p)));
+    }
+        
+    
+
+    for y in dimensions {
+        println!("layer has dimension: {:?}", y);
+
+        let ans: Vec<(i64, i64)> = knapsack_sols(&simples, y);
+
+        println!("simples are: {:?}", ans);
+
+        for z in ans{
+        let index = simples.iter().position(|x| *x == z).unwrap();
+        simples.remove(index);
+    }
+
+        
     }
 }
 
