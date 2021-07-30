@@ -185,6 +185,14 @@ impl core::ops::Mul<&Matrix> for Matrix {
     }
 }
 
+impl core::ops::Mul<Matrix> for &Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Matrix) -> Matrix {
+        self * &rhs
+    }
+}
+
 impl core::ops::Mul<&Matrix> for &Matrix {
     type Output = Matrix;
 
@@ -395,6 +403,9 @@ mod test {
             vec![74,64,101],
 
         ].into();
-            assert_eq!(a * b, c);
+        assert_eq!(&a * &b, c);
+        assert_eq!(&a * b.clone(), c);
+        assert_eq!(a.clone() * &b, c);
+        assert_eq!(a * b, c);
     }
 }
