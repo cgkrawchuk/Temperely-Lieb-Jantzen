@@ -1,8 +1,8 @@
-use tl_jantzen::{Matrix,extended_euclid};
 
+use crate::matrix::*;
+use crate::util::*;
 
-
-///Calculates the smith normal form of A 
+///Calculates the smith normal form of A
 ///
 ///Calculates the snf of A (done in place) and returns the invertible matricies
 /// S and T such that S*(snf(A))*T=A
@@ -98,10 +98,10 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     L_inverse[(k, t)] = -1 * tao;
                     L_inverse[(t, k)] = gamma;
                     L_inverse[(k, k)] = sigma;
-                    
+
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
-                    let mut m: Matrix = Matrix::new(A.cols,A.cols);
-                    
+                    let mut m: Matrix = Matrix::new(A.cols, A.cols);
+
                     for i in 0..A.rows {
                         for j in 0..A.cols {
                             for k in 0..A.cols {
@@ -110,7 +110,6 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                         }
                     }
                     *A = m;
-                    
 
                     T = L_inverse * T;
 
@@ -132,8 +131,6 @@ fn main() {
     println!("a is: {}", a);
     println!("s is: {}", s);
     println!("t is: {}", t);
-
-
 }
 
 #[cfg(test)]
@@ -142,7 +139,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_snf(){
+    fn test_snf() {
         let mut a: Matrix = vec![vec![-4, -6, 7], vec![2, 2, 4], vec![6, 6, 15]].into();
         let (s, t) = snf(&mut a);
 
@@ -165,6 +162,4 @@ mod tests {
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
     }
-
-    
 }

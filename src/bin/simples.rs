@@ -1,51 +1,5 @@
-extern crate itertools;
-
-use itertools::Itertools;
-use temperley_lieb_cat::*;
-use tl_jantzen::{binom, snf, Matrix};
-
 use std::io::{self, BufRead};
-
-use std::cmp::min;
-use std::env;
-
-/// Calculate the Gram matrix for a standard module
-///
-/// Calculates explicitly the Gram matrix (in the diagram
-/// basis) of the standard module S(n, m) with δ = 2.
-pub fn gram_matrix(n: usize, m: usize) -> Matrix {
-    fn ok(tab: &Vec<usize>) -> bool {
-        for (c, i) in tab.iter().enumerate() {
-            if *i < 2 * (c + 1) {
-                return false;
-            }
-        }
-        true
-    }
-    let mut monic_diagrams = Vec::new();
-    let prop = m;
-    let rn = (n - prop) / 2;
-    for lt in (1..(n + 1)).combinations(rn).filter(ok) {
-        monic_diagrams.push(TLDiagram::new(
-            n,
-            m,
-            lt.iter().fold(0, |l, n| l | (1 << n)),
-            0,
-        ));
-    }
-
-    let x = monic_diagrams.len();
-    let mut gm = Matrix::new(x, x);
-    for i in 0..x {
-        for j in 0..x {
-            let (a, b) = (monic_diagrams[i].involute()) * monic_diagrams[j];
-            if b == TLDiagram::id(m) {
-                gm[(i, j)] = (2_i64).pow(a as u32);
-            }
-        }
-    }
-    gm
-}
+use tl_jantzen::binom;
 
 /// Converts an i64 into the vector of its digits in base p
 ///
@@ -232,61 +186,25 @@ fn find_simples(n: i64, m: i64, p: i64, dim: i64) -> Vec<(i64, i64)> {
     ans
 }
 
-pub fn find_layers(m: i64, n: i64, p: i64) {
-    let mut g = gram_matrix(m as usize, n as usize);
-    //println!("gram matrix is: {}", g);
-
-    snf(&mut g);
-
-    //println!("snf of G is: {}", g);
-
-    let mut elem_divisors = Vec::new();
-
-    for k in 0..min(g.rows, g.cols) {
-        elem_divisors.push(g[(k, k)]);
-    }
-    elem_divisors.sort();
-    println!("{:?}", elem_divisors);
-
-    let mut dimensions = Vec::<i64>::new();
-
-    let mut index = 0;
-
-    let mut last = -1;
-
-    for x in 0..elem_divisors.len() {
-        if last != p_adic_val(elem_divisors[x], p) && x != 0 {
-            dimensions.push(index);
-            last = p_adic_val(elem_divisors[x], p);
-            index = 1;
-        } else if x == 0 {
-            last = p_adic_val(elem_divisors[x], p);
-            index = 1;
-        } else if x == elem_divisors.len() - 1 {
-            dimensions.push(index + 1);
-        } else {
-            index += 1;
-        }
-    }
-    //println!("{:?}", dimensions);
-
-    for x in dimensions {
-        println!("layer has dimension: {:?}", x);
-        println!("simples are: {:?}", find_simples(m, n, p, x as i64));
-    }
-}
-
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 4 {
-        println!("Enter m n p seperated by spaces");
-        return;
-    }
-    let n: i64 = args[1].parse().expect("Please enter an integer for n");
-    let m: i64 = args[2].parse().expect("Please enter an integer for m");
-    let p: i64 = args[3].parse().expect("Please enter an integer for p");
+    println!("Enter m n p dim seperated by spaces");
+    let reader = io::stdin();
+    let numbers: Vec<i64> = reader
+        .lock()
+        .lines()
+        .next()
+        .unwrap()
+        .unwrap()
+        .split(' ')
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.parse().unwrap())
+        .collect();
 
-    find_layers(n, m, p);
+    println!(
+        "simples \n{:?}",
+        find_simples(numbers[0], numbers[1], numbers[2], numbers[3])
+    );
 }
 
 #[cfg(test)]
@@ -355,27 +273,5 @@ mod tests {
         let v = vec![(0, 1), (0, 3), (0, 10)];
         let sum = 13;
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
-    }
-
-    #[test]
-    fn test_gram_matrix() {
-        let m: Matrix = vec![
-            vec![4, 2, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0, 0, 0],
-            vec![2, 4, 2, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0],
-            vec![0, 2, 4, 2, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0],
-            vec![0, 0, 2, 4, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0],
-            vec![2, 1, 0, 0, 4, 2, 0, 0, 1, 0, 0, 1, 0, 0],
-            vec![1, 2, 1, 0, 2, 4, 2, 0, 2, 1, 0, 2, 0, 0],
-            vec![0, 1, 2, 1, 0, 2, 4, 2, 1, 2, 1, 1, 0, 0],
-            vec![0, 0, 1, 2, 0, 0, 2, 4, 0, 1, 2, 0, 0, 0],
-            vec![2, 1, 0, 0, 1, 2, 1, 0, 4, 2, 0, 1, 0, 1],
-            vec![0, 0, 0, 0, 0, 1, 2, 1, 2, 4, 2, 2, 1, 2],
-            vec![0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 4, 1, 2, 1],
-            vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4],
-        ]
-        .into();
-        assert_eq!(gram_matrix(7, 3), m);
     }
 }

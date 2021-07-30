@@ -51,8 +51,7 @@ impl Matrix {
     /// Adds n times row i to row j to acheive a new row j
     pub fn add_multiple_rowi_to_rowj(&mut self, n: i64, i: usize, j: usize) {
         for k in 0..self.cols {
-            self.data[j * self.cols + k] +=
-                 n * self.data[i * self.cols + k];
+            self.data[j * self.cols + k] += n * self.data[i * self.cols + k];
         }
     }
 
@@ -223,7 +222,6 @@ impl core::fmt::Display for Matrix {
 mod test {
     use super::*;
 
-
     fn interesting_matrix(rows: usize, cols: usize) -> Matrix {
         let mut matrix = Matrix::new(rows, cols);
         for r in 0..rows {
@@ -281,27 +279,25 @@ mod test {
 
     #[test]
     fn swap_matrix_cols() {
-        
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
-        let  ans: Matrix = vec![vec![-3, 0, 1], vec![0, 1, 0], vec![1, 0, -1]].into();
-        mat.swap_cols(1,3);
+        let ans: Matrix = vec![vec![-3, 0, 1], vec![0, 1, 0], vec![1, 0, -1]].into();
+        mat.swap_cols(1, 3);
         assert_eq!(mat, ans);
-        
     }
 
     #[test]
     fn test_add_rows() {
         let mut mat: Matrix = Matrix::identity(3);
-        let  ans: Matrix = vec![vec![1, 0, 0], vec![3, 1, 0], vec![0, 0, 1]].into();
-        mat.add_rows(3,0,1);
+        let ans: Matrix = vec![vec![1, 0, 0], vec![3, 1, 0], vec![0, 0, 1]].into();
+        mat.add_rows(3, 0, 1);
         assert_eq!(mat, ans);
     }
 
     #[test]
     fn test_add_cols() {
         let mut mat: Matrix = Matrix::identity(3);
-        let  ans: Matrix = vec![vec![1, 0, 0], vec![-2, 1, 0], vec![0, 0, 1]].into();
-        mat.add_cols(-2,1,0);
+        let ans: Matrix = vec![vec![1, 0, 0], vec![-2, 1, 0], vec![0, 0, 1]].into();
+        mat.add_cols(-2, 1, 0);
         assert_eq!(mat, ans);
     }
 
