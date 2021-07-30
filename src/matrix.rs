@@ -280,8 +280,8 @@ mod test {
     #[test]
     fn swap_matrix_cols() {
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
-        let ans: Matrix = vec![vec![-3, 0, 1], vec![0, 1, 0], vec![1, 0, -1]].into();
-        mat.swap_cols(1, 3);
+        let ans: Matrix = vec![vec![-1, 0, 1], vec![0, 1, 0], vec![1, 0, -3]].into();
+        mat.swap_cols(0, 2);
         assert_eq!(mat, ans);
     }
 
