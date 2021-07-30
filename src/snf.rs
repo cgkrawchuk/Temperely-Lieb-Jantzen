@@ -1,4 +1,3 @@
-
 use crate::matrix::*;
 use crate::util::*;
 
@@ -55,19 +54,32 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
 
                     let alpha = a / gcd;
                     let gamma = b / gcd;
-                    let mut L = Matrix::identity(A.rows);
-                    L[(t, t)] = sigma;
-                    L[(t, k)] = tao;
-                    L[(k, t)] = -1 * gamma;
-                    L[(k, k)] = alpha;
-                    let mut L_inverse = Matrix::identity(A.rows);
-                    L_inverse[(t, t)] = alpha;
-                    L_inverse[(t, k)] = -1 * tao;
-                    L_inverse[(k, t)] = gamma;
-                    L_inverse[(k, k)] = sigma;
-                    *A = &L * A;
 
-                    S = S * L_inverse;
+                    let mut rowt = vec![0; A.cols];
+                    let mut rowk = vec![0; A.cols];
+
+                    for j in 0..A.cols {
+                        rowt[j] = sigma * A[(t, j)] + tao * A[(k, j)];
+                        rowk[j] = -gamma * A[(t, j)] + alpha * A[(k, j)];
+                    }
+
+                    for j in 0..A.cols {
+                        A[(t, j)] = rowt[j];
+                        A[(k, j)] = rowk[j];
+                    }
+
+                    let mut colt = vec![0; S.rows];
+                    let mut colk = vec![0; S.rows];
+
+                    for j in 0..S.rows {
+                        colt[j] = alpha * S[(j, t)] + gamma * S[(j, k)];
+                        colk[j] = -tao * S[(j, t)] + sigma * S[(j, k)];
+                    }
+
+                    for j in 0..S.rows {
+                        S[(j, t)] = colt[j];
+                        S[(j, k)] = colk[j];
+                    }
                 }
             }
 
@@ -89,17 +101,12 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     let gamma = b / gcd;
                     let mut L = Matrix::identity(A.cols);
                     L[(t, t)] = sigma;
-                    L[(k, t)] = tao;
                     L[(t, k)] = -1 * gamma;
+                    L[(k, t)] = tao;
                     L[(k, k)] = alpha;
 
-                    let mut L_inverse = Matrix::identity(A.cols);
-                    L_inverse[(t, t)] = alpha;
-                    L_inverse[(k, t)] = -1 * tao;
-                    L_inverse[(t, k)] = gamma;
-                    L_inverse[(k, k)] = sigma;
-
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
+
                     let mut m: Matrix = Matrix::new(A.cols, A.cols);
 
                     for i in 0..A.rows {
@@ -111,7 +118,18 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
                     }
                     *A = m;
 
-                    T = L_inverse * T;
+                    let mut rowt = vec![0; T.cols];
+                    let mut rowk = vec![0; T.cols];
+
+                    for j in 0..T.cols {
+                        rowt[j] = alpha * T[(t, j)] + gamma * T[(k, j)];
+                        rowk[j] = -tao * T[(t, j)] + sigma * T[(k, j)];
+                    }
+
+                    for j in 0..T.cols {
+                        T[(t, j)] = rowt[j];
+                        T[(k, j)] = rowk[j];
+                    }
 
                     made_changes = true;
                 }
