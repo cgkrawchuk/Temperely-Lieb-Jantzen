@@ -168,5 +168,29 @@ mod tests {
         assert_eq!(a, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
+
+        let mut a: Matrix = Matrix::identity(4);
+        let (s,t) = snf(&mut a);
+
+        let snf_a: Matrix = vec![vec![1, 0, 0,0], vec![0, 1,0, 0], vec![0,0, 1, 0],vec![0,0,0,1]].into();
+        let snf_s: Matrix = vec![vec![1, 0, 0,0], vec![0, 1,0, 0], vec![0,0, 1, 0],vec![0,0,0,1]].into();
+        let snf_t: Matrix = vec![vec![1, 0, 0,0], vec![0, 1,0, 0], vec![0,0, 1, 0],vec![0,0,0,1]].into();
+
+        assert_eq!(a, snf_a);
+        assert_eq!(s, snf_s);
+        assert_eq!(t, snf_t);
+
+        let mut a: Matrix = Matrix::new(4,4);
+        let (s,t) = snf(&mut a);
+
+        let snf_a: Matrix = vec![vec![0, 0, 0,0], vec![0, 0,0, 0], vec![0,0, 0, 0],vec![0,0,0,0]].into();
+        let snf_s: Matrix = vec![vec![1, 0, 0,0], vec![0, 1,0, 0], vec![0,0, 1, 0],vec![0,0,0,1]].into();
+        let snf_t: Matrix = vec![vec![1, 0, 0,0], vec![0, 1,0, 0], vec![0,0, 1, 0],vec![0,0,0,1]].into();
+
+        assert_eq!(a, snf_a);
+        assert_eq!(s, snf_s);
+        assert_eq!(t, snf_t);
+
+
     }
 }
