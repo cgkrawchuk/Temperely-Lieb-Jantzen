@@ -190,7 +190,9 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     } else {
         let with_first = knapsack_sols_exists(&v[1..], sum - v[0].1);
         let without_first = knapsack_sols_exists(&v[1..], sum);
+        if sum!=0{
         assert!(!(with_first & without_first), "multiple solutions");
+    }
         with_first | without_first
     }
 }
