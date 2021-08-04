@@ -399,6 +399,6 @@ mod test {
         assert_eq!(&a * &b, c);
         assert_eq!(&a * b.clone(), c);
         assert_eq!(a.clone() * &b, c);
-        assert_eq!(a * b, c);
+        assert_eq!(a * &b, c);
     }
 }
