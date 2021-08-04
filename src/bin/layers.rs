@@ -190,9 +190,9 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
     } else {
         let with_first = knapsack_sols_exists(&v[1..], sum - v[0].1);
         let without_first = knapsack_sols_exists(&v[1..], sum);
-        if sum!=0{
-        assert!(!(with_first & without_first), "multiple solutions");
-    }
+        if sum != 0 {
+            assert!(!(with_first & without_first), "multiple solutions");
+        }
         with_first | without_first
     }
 }
@@ -203,7 +203,7 @@ fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
 /// the sum of their second entry totals to 'sum'
 fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
     let mut ans: Vec<(i64, i64)> = Vec::new();
-    knapsack_sols_exists(&v, sum );
+    knapsack_sols_exists(&v, sum);
     for (n, x) in v.iter().enumerate() {
         if knapsack_sols_exists(&v[(n + 1)..], sum - x.1) {
             ans.push(*x);
@@ -233,12 +233,17 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 
     let mut elem_divisors_valuation = Vec::new();
     for n in elem_divisors.iter() {
-        elem_divisors_valuation.push( p_adic_val(*n, p) );
+        elem_divisors_valuation.push(p_adic_val(*n, p));
     }
     let max_layer = *elem_divisors_valuation.iter().max().unwrap();
     for layer in 0..=max_layer {
         // TODO (colin) Dimensions should probably be usizes everywhere
-        dimensions.push(elem_divisors_valuation.iter().filter(|n| **n == layer).count() as i64);
+        dimensions.push(
+            elem_divisors_valuation
+                .iter()
+                .filter(|n| **n == layer)
+                .count() as i64,
+        );
     }
 
     let mut indicies: Vec<i64> = Vec::new();
@@ -341,18 +346,17 @@ mod tests {
         let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
         let w = vec![(0, 10), (1, 3), (2, 2), (3, 2)];
         let sum = 13;
-        assert_eq!(knapsack_sols_exists(&w, sum), true);        
+        assert_eq!(knapsack_sols_exists(&w, sum), true);
 
-        let w :Vec<(i64,i64)>= vec![];
+        let w: Vec<(i64, i64)> = vec![];
 
         assert_eq!(knapsack_sols_exists(&w, sum), false);
 
         let sum = 0;
-        
+
         assert_eq!(knapsack_sols_exists(&v, sum), true);
 
-        assert_eq!(knapsack_sols_exists(&w,sum),true );
-
+        assert_eq!(knapsack_sols_exists(&w, sum), true);
     }
 
     #[test]
