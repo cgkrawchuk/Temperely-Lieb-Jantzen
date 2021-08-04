@@ -5,7 +5,8 @@ use crate::util::*;
 ///
 ///Calculates the snf of A (done in place) and returns the invertible matricies
 /// S and T such that S*(snf(A))*T=A
-pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
+pub fn snf(A: &mut Matrix) -> (Matrix, Matrix,Matrix) {
+    let mut A = A.clone();
     let mut S = Matrix::identity(A.rows);
     let mut T = Matrix::identity(A.cols);
 
@@ -107,7 +108,7 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
 
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
 
-                    *A = A.clone() * L;
+                    A = A.clone() * L;
 
                     let mut rowt = vec![0; T.cols];
                     let mut rowk = vec![0; T.cols];
@@ -131,7 +132,7 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix) {
             }
         }
     }
-    return (S, T);
+    return (S,A, T);
 }
 
 #[cfg(test)]
@@ -144,29 +145,29 @@ mod tests {
     //put in zero matrix, put in identity
     fn test_snf() {
         let mut a: Matrix = vec![vec![-4, -6, 7], vec![2, 2, 4], vec![6, 6, 15]].into();
-        let (s, t) = snf(&mut a);
+        let (s,b, t) = snf(&mut a);
 
         let snf_a: Matrix = vec![vec![2, 0, 0], vec![0, 1, 0], vec![0, 0, 6]].into();
         let snf_s: Matrix = vec![vec![-2, -1, 0], vec![1, 0, 0], vec![3, -3, 1]].into();
         let snf_t: Matrix = vec![vec![1, 1, 2], vec![0, 2, -15], vec![0, 1, -7]].into();
 
-        assert_eq!(a, snf_a);
+        assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
 
         a = vec![vec![2, 4, 4], vec![-6, 6, 12], vec![10, 4, 16]].into();
-        let (s, t) = snf(&mut a);
+        let (s,b, t) = snf(&mut a);
 
         let snf_a: Matrix = vec![vec![2, 0, 0], vec![0, 2, 0], vec![0, 0, 156]].into();
         let snf_s: Matrix = vec![vec![1, 0, 0], vec![-3, 9, -1], vec![5, -8, 1]].into();
         let snf_t: Matrix = vec![vec![1, 2, 2], vec![0, 1, 10], vec![0, 0, 1]].into();
 
-        assert_eq!(a, snf_a);
+        assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
 
         let mut a: Matrix = Matrix::identity(4);
-        let (s, t) = snf(&mut a);
+        let (s,b, t) = snf(&mut a);
 
         let snf_a: Matrix = vec![
             vec![1, 0, 0, 0],
@@ -190,12 +191,12 @@ mod tests {
         ]
         .into();
 
-        assert_eq!(a, snf_a);
+        assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
 
         let mut a: Matrix = Matrix::new(4, 4);
-        let (s, t) = snf(&mut a);
+        let (s,b, t) = snf(&mut a);
 
         let snf_a: Matrix = vec![
             vec![0, 0, 0, 0],
@@ -219,7 +220,7 @@ mod tests {
         ]
         .into();
 
-        assert_eq!(a, snf_a);
+        assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
     }
