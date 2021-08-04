@@ -364,6 +364,23 @@ mod tests {
         let v = vec![(0, 1), (0, 3), (0, 10)];
         let sum = 13;
         assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
+
+
+        let w: Vec<(i64, i64)> = vec![];
+
+        assert_eq!(knapsack_sols(&w, sum), w);
+        let sum = 0;
+
+        assert_eq!(knapsack_sols(&v, sum), w);
+
+        assert_eq!(knapsack_sols(&w, sum), w);
+
+
+
+        
+
+
+
     }
 
     #[test]
