@@ -341,7 +341,18 @@ mod tests {
         let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
         let w = vec![(0, 10), (1, 3), (2, 2), (3, 2)];
         let sum = 13;
-        assert_eq!(knapsack_sols_exists(&w, sum), true);
+        assert_eq!(knapsack_sols_exists(&w, sum), true);        
+
+        let w :Vec<(i64,i64)>= vec![];
+
+        assert_eq!(knapsack_sols_exists(&w, sum), false);
+
+        let sum = 0;
+        
+        assert_eq!(knapsack_sols_exists(&v, sum), true);
+
+        assert_eq!(knapsack_sols_exists(&w,sum),true );
+
     }
 
     #[test]
