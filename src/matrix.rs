@@ -70,6 +70,30 @@ impl Matrix {
         }
         ans
     }
+
+    pub fn return_col_j(&self, j: usize) -> Vec<i64> {
+        assert!(j < self.cols);
+        let mut col = Vec::new();
+        for i in 0..self.rows {
+            col.push(self.data[i * self.cols + j]);
+        }
+
+        col
+    }
+
+    pub fn return_row_i(&self, i: usize) -> Vec<i64> {
+        assert!(i < self.rows);
+        let mut row = Vec::new();
+        for j in 0..self.cols {
+            row.push(self.data[i * self.cols + j]);
+        }
+
+        row
+    }
+
+    pub fn entries(&self) -> Vec<i64> {
+        self.data.clone()
+    }
 }
 
 impl core::ops::Index<(usize, usize)> for Matrix {
