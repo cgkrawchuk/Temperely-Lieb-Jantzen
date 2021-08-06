@@ -23,13 +23,9 @@ pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
     return A;
 }
 
-///Calculates the square of the euclidean norm of a vector
-pub fn euclid_norm_squared(v: Vec<i64>) -> i64 {
-    let mut ans = 0;
-    for x in v.iter() {
-        ans += x * x;
-    }
-    ans
+/// Calculates the square of the Euclidean norm of a vector
+pub fn euclid_norm_squared(v: &[i64]) -> i64 {
+    v.iter().map(|x| x * x).sum()
 }
 
 ///Returns the maximum value of a matrix
@@ -108,12 +104,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(A.return_col_j(j))
-                    * euclid_norm_squared(A.return_row_i(i))
+                } else if euclid_norm_squared(&A.return_col_j(j))
+                    * euclid_norm_squared(&A.return_row_i(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(A.return_col_j(j))
-                        * euclid_norm_squared(A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.return_col_j(j))
+                        * euclid_norm_squared(&A.return_row_i(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }
@@ -189,12 +185,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(A.return_col_j(j))
-                    * euclid_norm_squared(A.return_row_i(i))
+                } else if euclid_norm_squared(&A.return_col_j(j))
+                    * euclid_norm_squared(&A.return_row_i(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(A.return_col_j(j))
-                        * euclid_norm_squared(A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.return_col_j(j))
+                        * euclid_norm_squared(&A.return_row_i(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }
@@ -205,12 +201,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(A.return_col_j(j))
-                    * euclid_norm_squared(A.return_row_i(i))
+                } else if euclid_norm_squared(&A.return_col_j(j))
+                    * euclid_norm_squared(&A.return_row_i(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(A.return_col_j(j))
-                        * euclid_norm_squared(A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.return_col_j(j))
+                        * euclid_norm_squared(&A.return_row_i(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }
