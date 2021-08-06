@@ -302,6 +302,26 @@ mod test {
     }
 
     #[test]
+    fn test_return_col_j(){
+        let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
+
+        assert_eq!(mat.return_col_j(0),vec![1,0,-3] );
+
+         assert_eq!(mat.return_col_j(2),vec![-1,0,1] );
+
+    }
+
+    #[test]
+    fn test_return_row_i(){
+        let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
+
+        assert_eq!(mat.return_row_i(0),vec![1,0,-1] );
+
+         assert_eq!(mat.return_row_i(2),vec![-3,0,1] );
+         
+    }
+
+    #[test]
     fn swap_matrix_cols() {
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
         let ans: Matrix = vec![vec![-1, 0, 1], vec![0, 1, 0], vec![1, 0, -3]].into();
