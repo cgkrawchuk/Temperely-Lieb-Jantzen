@@ -169,9 +169,9 @@ mod tests {
         let (s, b, t) = snf(&mut a);
 
         let snf_a: Matrix = Matrix::identity(4);
-        
-        let snf_s: Matrix=Matrix::identity(4);
-        let snf_t: Matrix=Matrix::identity(4);
+
+        let snf_s: Matrix = Matrix::identity(4);
+        let snf_t: Matrix = Matrix::identity(4);
         assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);
         assert_eq!(t, snf_t);
@@ -179,10 +179,10 @@ mod tests {
         let mut a: Matrix = Matrix::new(4, 4);
         let (s, b, t) = snf(&mut a);
 
-        let snf_a: Matrix = Matrix::new(4,4);
-        
-        let snf_s:Matrix= Matrix::identity(4);
-        let snf_t: Matrix=Matrix::identity(4);
+        let snf_a: Matrix = Matrix::new(4, 4);
+
+        let snf_s: Matrix = Matrix::identity(4);
+        let snf_t: Matrix = Matrix::identity(4);
 
         assert_eq!(b, snf_a);
         assert_eq!(s, snf_s);

@@ -300,19 +300,17 @@ mod tests {
         assert_eq!(convert_base_p(0, 2), vec![]);
         let v = vec![243, 0, 54, 0, 0, 2];
         assert_eq!(convert_base_p(299, 3), v);
-
     }
 
     #[test]
     #[should_panic]
-    fn test_p_adic_val_infinity(){
+    fn test_p_adic_val_infinity() {
         p_adic_val(0, 2);
     }
     #[test]
     fn test_p_adic_val() {
         assert_eq!(p_adic_val(54, 3), 3);
         assert_eq!(p_adic_val(1, 2), 0);
-        
     }
 
     #[test]
@@ -320,7 +318,7 @@ mod tests {
         let v = vec![0, 2, 4, 6];
         assert_eq!(supp(6, 2), v);
 
-         let v = vec![6,8];
+        let v = vec![6, 8];
 
         assert_eq!(supp(8, 8), v);
 
@@ -328,8 +326,8 @@ mod tests {
 
         assert_eq!(supp(0, 4), v);
 
-        for n in (0..100){
-            assert!(supp(n,2).contains(&n));
+        for n in (0..100) {
+            assert!(supp(n, 2).contains(&n));
         }
     }
 
@@ -369,12 +367,11 @@ mod tests {
         assert_eq!(dimension(0, 0, 2), 1);
     }
 
-
     #[test]
     #[should_panic]
-    fn test_multiple_sols(){
+    fn test_multiple_sols() {
         let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
-        knapsack_sols_exists(&v,13);
+        knapsack_sols_exists(&v, 13);
     }
 
     #[test]
