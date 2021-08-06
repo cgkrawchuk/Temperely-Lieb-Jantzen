@@ -142,7 +142,6 @@ mod tests {
 
     #[test]
 
-    //put in zero matrix, put in identity
     fn test_snf() {
         let mut a: Matrix = vec![vec![-4, -6, 7], vec![2, 2, 4], vec![6, 6, 15]].into();
         let (s, b, t) = snf(&mut a);
