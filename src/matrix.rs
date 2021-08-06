@@ -193,7 +193,6 @@ impl core::ops::Sub<Matrix> for Matrix {
     }
 }
 
-
 impl core::ops::Mul<&Matrix> for Matrix {
     type Output = Matrix;
 
