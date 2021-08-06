@@ -182,20 +182,24 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
 
                     let alpha = a / gcd;
                     let gamma = b / gcd;
-                    let mut L = Matrix::identity(A.cols);
-                    L[(t, t)] = sigma;
-                    L[(t, k)] = -1 * gamma;
-                    L[(k, t)] = tao;
-                    L[(k, k)] = alpha;
 
-                    //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
+                    let mut colt = vec![0; A.rows];
+                    let mut colk = vec![0; A.rows];
 
-                    A = A.clone() * &L;
+                    for i in 0..A.rows {
+                        colt[i] = sigma * A[(i, t)] + tao * A[(i, k)];
+                        colk[i] = -gamma * A[(i, t)] + alpha * A[(i, k)];
+                    }
+
+                    for i in 0..A.rows {
+                        A[(i, t)] = colt[i];
+                        A[(i, k)] = colk[i];
+                    }
                 }
             }
 
-            let indices_row = find_pivot(&A, t..t+1, t..A.cols).unwrap();
-            let indices_col = find_pivot(&A, t..A.rows, t..t+1).unwrap();
+            let indices_row = find_pivot(&A, t..t + 1, t..A.cols).unwrap();
+            let indices_col = find_pivot(&A, t..A.rows, t..t + 1).unwrap();
 
             let indices;
             if indices_row.2 < indices_col.2 {
