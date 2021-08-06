@@ -360,6 +360,13 @@ mod tests {
     }
 
     #[test]
+    fn test_for_overflow(){
+        find_layers(8,2,2);
+        find_layers(10,2,2);
+        find_layers(10,6,3);
+    }
+
+    #[test]
     fn test_dimension() {
         assert_eq!(dimension(6, 2, 2), 4);
         assert_eq!(dimension(8, 4, 3), 13);
