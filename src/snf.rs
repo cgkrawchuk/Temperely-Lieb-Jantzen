@@ -108,7 +108,7 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix, Matrix) {
 
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
 
-                    A = A.clone() * L;
+                    A = A.clone() * &L;
 
                     let mut rowt = vec![0; T.cols];
                     let mut rowk = vec![0; T.cols];
