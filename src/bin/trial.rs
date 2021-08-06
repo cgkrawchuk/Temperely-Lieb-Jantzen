@@ -1,7 +1,7 @@
 extern crate itertools;
 
-use std::ops::Range;
 use itertools::Itertools;
+use std::ops::Range;
 use temperley_lieb_cat::*;
 use tl_jantzen::{binom, extended_euclid, Matrix};
 
@@ -14,9 +14,8 @@ use std::env;
 pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
     let mut A = A.clone();
     for i in 0..A.cols {
-        for j in 0..(A.cols - i - 1) {
-            if A.col(j).iter().max().unwrap() > A.col(j + 1).iter().max().unwrap()
-            {
+        for j in 0..A.cols - i - 1 {
+            if A.col(j).iter().max() > A.col(j + 1).iter().max() {
                 A.swap_cols(j, j + 1);
             }
         }
@@ -31,8 +30,7 @@ pub fn euclid_norm_squared(v: &[i64]) -> i64 {
 
 ///Returns the maximum value of a matrix
 pub fn max_norm(A: &Matrix) -> i64 {
-    let data = A.entries();
-    return *data.iter().max().unwrap();
+    return *A.entries().iter().max().unwrap();
 }
 
 ///Reduces matrix coefficients using normcol method
@@ -103,15 +101,14 @@ fn find_pivot(A: &Matrix, rows: Range<usize>, cols: Range<usize>) -> Option<(usi
     for i in rows {
         for j in cols.clone() {
             if A[(i, j)] == 0 {
-                continue
+                continue;
             }
-            let weight =
-            euclid_norm_squared(&A.col(j)) * euclid_norm_squared(&A.row(i));
+            let weight = euclid_norm_squared(&A.col(j)) * euclid_norm_squared(&A.row(i));
             match indices {
                 None => {
                     indices = Some((i, j, weight));
-                },
-                Some((_,_,min_weight)) => {
+                }
+                Some((_, _, min_weight)) => {
                     if weight < min_weight {
                         indices = Some((i, j, weight));
                     }
