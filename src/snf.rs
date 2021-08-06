@@ -5,7 +5,7 @@ use crate::util::*;
 ///
 ///Calculates the snf of A (done in place) and returns the invertible matricies
 /// S and T such that S*(snf(A))*T=A
-pub fn snf(A: &mut Matrix) -> (Matrix, Matrix,Matrix) {
+pub fn snf(A: &mut Matrix) -> (Matrix, Matrix, Matrix) {
     let mut A = A.clone();
     let mut S = Matrix::identity(A.rows);
     let mut T = Matrix::identity(A.cols);
@@ -108,7 +108,7 @@ pub fn snf(A: &mut Matrix) -> (Matrix, Matrix,Matrix) {
 
                     //the following lines are a horrible hack because i couldn't get matrix multiplication to work here
 
-                    A = A.clone() * L;
+                    A = A.clone() * &L;
 
                     let mut rowt = vec![0; T.cols];
                     let mut rowk = vec![0; T.cols];
