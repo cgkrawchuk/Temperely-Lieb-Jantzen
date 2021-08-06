@@ -14,7 +14,7 @@ pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
     let mut A = A.clone();
     for i in 0..A.cols {
         for j in 0..(A.cols - i - 1) {
-            if A.return_col_j(j).iter().max().unwrap() > A.return_col_j(j + 1).iter().max().unwrap()
+            if A.col(j).iter().max().unwrap() > A.col(j + 1).iter().max().unwrap()
             {
                 A.swap_cols(j, j + 1);
             }
@@ -63,7 +63,7 @@ pub fn sort_cols_lex(B: &mut Matrix) -> Matrix {
     let mut A = B.clone();
     for i in 0..A.cols {
         for j in 0..(A.cols - i - 1) {
-            if A.return_col_j(j) < A.return_col_j(j + 1) {
+            if A.col(j) < A.col(j + 1) {
                 A.swap_cols(j, j + 1);
             }
         }
@@ -104,12 +104,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(&A.return_col_j(j))
-                    * euclid_norm_squared(&A.return_row_i(i))
+                } else if euclid_norm_squared(&A.col(j))
+                    * euclid_norm_squared(&A.row(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(&A.return_col_j(j))
-                        * euclid_norm_squared(&A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.col(j))
+                        * euclid_norm_squared(&A.row(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }
@@ -127,7 +127,7 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
 
         let zero_col = vec![0; A.rows - t - 1];
 
-        while &A.return_row_i(t)[t + 1..] != zero_row || &A.return_col_j(t)[t + 1..] != zero_col {
+        while &A.row(t)[t + 1..] != zero_row || &A.col(t)[t + 1..] != zero_col {
             for k in t + 1..A.rows {
                 let a = A[(t, t)];
                 let b = A[(k, t)];
@@ -185,12 +185,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(&A.return_col_j(j))
-                    * euclid_norm_squared(&A.return_row_i(i))
+                } else if euclid_norm_squared(&A.col(j))
+                    * euclid_norm_squared(&A.row(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(&A.return_col_j(j))
-                        * euclid_norm_squared(&A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.col(j))
+                        * euclid_norm_squared(&A.row(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }
@@ -201,12 +201,12 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 if A[(i, j)] == 0 {
                     count += 1;
                     continue;
-                } else if euclid_norm_squared(&A.return_col_j(j))
-                    * euclid_norm_squared(&A.return_row_i(i))
+                } else if euclid_norm_squared(&A.col(j))
+                    * euclid_norm_squared(&A.row(i))
                     < minValue
                 {
-                    minValue = euclid_norm_squared(&A.return_col_j(j))
-                        * euclid_norm_squared(&A.return_row_i(i));
+                    minValue = euclid_norm_squared(&A.col(j))
+                        * euclid_norm_squared(&A.row(i));
                     indicies.0 = i;
                     indicies.1 = j;
                 }

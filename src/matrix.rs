@@ -71,23 +71,19 @@ impl Matrix {
         ans
     }
 
-    pub fn return_col_j(&self, j: usize) -> Vec<i64> {
-        assert!(j < self.cols);
+    pub fn col(&self, j: usize) -> Vec<i64> {
         let mut col = Vec::new();
         for i in 0..self.rows {
-            col.push(self.data[i * self.cols + j]);
+            col.push(self[(i,j)]);
         }
-
         col
     }
 
-    pub fn return_row_i(&self, i: usize) -> Vec<i64> {
-        assert!(i < self.rows);
+    pub fn row(&self, i: usize) -> Vec<i64> {
         let mut row = Vec::new();
         for j in 0..self.cols {
-            row.push(self.data[i * self.cols + j]);
+            row.push(self[(i,j)]);
         }
-
         row
     }
 
@@ -302,29 +298,29 @@ mod test {
     }
 
     #[test]
-    fn test_return_col_j() {
+    fn test_col() {
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
 
-        assert_eq!(mat.return_col_j(0), vec![1, 0, -3]);
+        assert_eq!(mat.col(0), vec![1, 0, -3]);
 
-        assert_eq!(mat.return_col_j(2), vec![-1, 0, 1]);
+        assert_eq!(mat.col(2), vec![-1, 0, 1]);
     }
 
     #[test]
-    fn test_return_row_i() {
+    fn test_row() {
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
 
-        assert_eq!(mat.return_row_i(0), vec![1, 0, -1]);
+        assert_eq!(mat.row(0), vec![1, 0, -1]);
 
-        assert_eq!(mat.return_row_i(2), vec![-3, 0, 1]);
+        assert_eq!(mat.row(2), vec![-3, 0, 1]);
     }
 
     #[test]
     #[should_panic]
     fn return_out_of_bounds_cols() {
         let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
-        mat.return_col_j(3);
-        mat.return_row_i(4);
+        mat.col(3);
+        mat.row(4);
     }
 
     #[test]
