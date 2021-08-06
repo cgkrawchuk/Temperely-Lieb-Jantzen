@@ -1,5 +1,6 @@
 extern crate itertools;
 
+use std::ops::Range;
 use itertools::Itertools;
 use temperley_lieb_cat::*;
 use tl_jantzen::{binom, extended_euclid, Matrix};
@@ -90,38 +91,53 @@ pub fn rosser(B: &mut Matrix) -> Matrix {
     return A;
 }
 
-///Calculates the snf as before but with new method for choosing pivot
+/// Chooses the pivot for SNF calculations
+///
+/// The pivot is chosen from the submatrix of A in the given rows
+/// and columns.
+///
+/// The pivot position and the weight of this pivot (smaller is better)
+/// are returned.
+fn find_pivot(A: &Matrix, rows: Range<usize>, cols: Range<usize>) -> Option<(usize, usize, i64)> {
+    let mut indices = None;
+    for i in rows {
+        for j in cols.clone() {
+            if A[(i, j)] == 0 {
+                continue
+            }
+            let weight =
+            euclid_norm_squared(&A.col(j)) * euclid_norm_squared(&A.row(i));
+            match indices {
+                None => {
+                    indices = Some((i, j, weight));
+                },
+                Some((_,_,min_weight)) => {
+                    if weight < min_weight {
+                        indices = Some((i, j, weight));
+                    }
+                }
+            }
+        }
+    }
+    indices
+}
+
+/// Calculates the snf as before but with new method for choosing pivot
 pub fn snf(B: &mut Matrix) -> (Matrix) {
     let mut A = B.clone();
     let t = 0;
 
     for t in (0..A.rows - 1) {
-        let mut count = 0;
-        let mut minValue = i64::MAX;
-        let mut indicies = (t, t);
-        for i in t..A.rows {
-            for j in t..A.cols {
-                if A[(i, j)] == 0 {
-                    count += 1;
-                    continue;
-                } else if euclid_norm_squared(&A.col(j))
-                    * euclid_norm_squared(&A.row(i))
-                    < minValue
-                {
-                    minValue = euclid_norm_squared(&A.col(j))
-                        * euclid_norm_squared(&A.row(i));
-                    indicies.0 = i;
-                    indicies.1 = j;
-                }
+        let indices = find_pivot(&A, t..A.rows, t..A.cols);
+        match indices {
+            None => {
+                break;
+            }
+            Some((i, j, _)) => {
+                A.swap_rows(t, i);
+                A.swap_cols(t, j);
             }
         }
-
-        if count == (A.rows - t) * (A.cols - t) {
-            break;
-        }
-
-        A.swap_rows(t, indicies.0);
-        A.swap_cols(t, indicies.1);
 
         let zero_row = vec![0; A.cols - t - 1];
 
@@ -178,42 +194,18 @@ pub fn snf(B: &mut Matrix) -> (Matrix) {
                 }
             }
 
-            indicies = (t, t);
-            minValue = i64::MAX;
-            let i = t;
-            for j in (t..A.cols) {
-                if A[(i, j)] == 0 {
-                    count += 1;
-                    continue;
-                } else if euclid_norm_squared(&A.col(j))
-                    * euclid_norm_squared(&A.row(i))
-                    < minValue
-                {
-                    minValue = euclid_norm_squared(&A.col(j))
-                        * euclid_norm_squared(&A.row(i));
-                    indicies.0 = i;
-                    indicies.1 = j;
-                }
+            let indices_row = find_pivot(&A, t..t+1, t..A.cols).unwrap();
+            let indices_col = find_pivot(&A, t..A.rows, t..t+1).unwrap();
+
+            let indices;
+            if indices_row.2 < indices_col.2 {
+                indices = (indices_row.0, indices_row.1);
+            } else {
+                indices = (indices_col.0, indices_col.1);
             }
 
-            let j = t;
-            for i in (t..A.rows) {
-                if A[(i, j)] == 0 {
-                    count += 1;
-                    continue;
-                } else if euclid_norm_squared(&A.col(j))
-                    * euclid_norm_squared(&A.row(i))
-                    < minValue
-                {
-                    minValue = euclid_norm_squared(&A.col(j))
-                        * euclid_norm_squared(&A.row(i));
-                    indicies.0 = i;
-                    indicies.1 = j;
-                }
-            }
-
-            A.swap_rows(t, indicies.0);
-            A.swap_cols(t, indicies.1);
+            A.swap_rows(t, indices.0);
+            A.swap_cols(t, indices.1);
         }
     }
 
