@@ -217,7 +217,7 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
     //println!("gram matrix is: {}", g);
 
-    snf(&mut g);
+    g = snf(&mut g);
 
     //println!("snf of G is: {}", g);
 
