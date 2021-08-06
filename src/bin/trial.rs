@@ -38,17 +38,6 @@ pub fn max_norm(A: &Matrix) -> i64 {
     return *data.iter().max().unwrap();
 }
 
-///Returns -1,0,1 if x is negative, zero, positive respectively
-pub fn sign(x: i64) -> (i64) {
-    if x < 0 {
-        return -1;
-    } else if x > 0 {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 ///Reduces matrix coefficients using normcol method
 pub fn normcol(B: &mut Matrix) -> Matrix {
     let mut A = B.clone();
@@ -59,7 +48,7 @@ pub fn normcol(B: &mut Matrix) -> Matrix {
     while norm_s <= norm_a {
         norm_a = norm_s;
         for k in (1..A.cols).rev() {
-            if sign(A[(0, k)]) == sign(A[(0, k - 1)]) {
+            if A[(0, k)].signum() == A[(0, k - 1)].signum() {
                 A.add_multiple_coli_to_colj(-1, k - 1, k);
             } else {
                 A.add_multiple_coli_to_colj(1, k - 1, k);
