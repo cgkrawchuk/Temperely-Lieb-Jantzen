@@ -9,6 +9,7 @@ use std::io::{self, BufRead};
 use std::cmp::min;
 use std::env;
 
+///Bubble sorts columns by their maximum entry
 pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
     let mut A = A.clone();
     for i in 0..A.cols {
@@ -21,6 +22,8 @@ pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
     }
     return A;
 }
+
+///Calculates the square of the euclidean norm of a vector
 pub fn euclid_norm_squared(v: Vec<i64>) -> i64 {
     let mut ans = 0;
     for x in v.iter() {
@@ -29,11 +32,13 @@ pub fn euclid_norm_squared(v: Vec<i64>) -> i64 {
     ans
 }
 
+///Returns the maximum value of a matrix
 pub fn max_norm(A: &Matrix) -> i64 {
     let data = A.entries();
     return *data.iter().max().unwrap();
 }
 
+///Returns -1,0,1 if x is negative, zero, positive respectively
 pub fn sign(x: i64) -> (i64) {
     if x < 0 {
         return -1;
@@ -44,6 +49,7 @@ pub fn sign(x: i64) -> (i64) {
     }
 }
 
+///Reduces matrix coefficients using normcol method
 pub fn normcol(B: &mut Matrix) -> Matrix {
     let mut A = B.clone();
     sort_cols_max(&mut A);
@@ -67,6 +73,7 @@ pub fn normcol(B: &mut Matrix) -> Matrix {
     return A;
 }
 
+///lexicographically sorts the columns of a matrix
 pub fn sort_cols_lex(B: &mut Matrix) -> Matrix {
     let mut A = B.clone();
     for i in 0..A.cols {
@@ -80,6 +87,7 @@ pub fn sort_cols_lex(B: &mut Matrix) -> Matrix {
     return A;
 }
 
+///Reduces the entries of a matrix using the rosser method
 pub fn rosser(B: &mut Matrix) -> Matrix {
     let mut A = B.clone();
     for k in (0..A.cols) {
@@ -97,6 +105,7 @@ pub fn rosser(B: &mut Matrix) -> Matrix {
     return A;
 }
 
+///Calculates the snf as before but with new method for choosing pivot
 pub fn snf(B: &mut Matrix) -> (Matrix) {
     let mut A = B.clone();
     let t = 0;
