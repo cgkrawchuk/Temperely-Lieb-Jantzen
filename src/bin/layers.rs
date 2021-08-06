@@ -297,22 +297,47 @@ mod tests {
     fn test_convert_base_p() {
         let v = vec![4, 2, 1];
         assert_eq!(convert_base_p(7, 2), v);
+        assert_eq!(convert_base_p(0, 2), vec![]);
+        let v = vec![243, 0, 54, 0, 0, 2];
+        assert_eq!(convert_base_p(299, 3), v);
+
     }
 
     #[test]
+    #[should_panic]
+    fn test_p_adic_val_infinity(){
+        p_adic_val(0, 2);
+    }
+    #[test]
     fn test_p_adic_val() {
         assert_eq!(p_adic_val(54, 3), 3);
+        assert_eq!(p_adic_val(1, 2), 0);
+        
     }
 
     #[test]
     fn test_supp() {
         let v = vec![0, 2, 4, 6];
         assert_eq!(supp(6, 2), v);
+
+         let v = vec![6,8];
+
+        assert_eq!(supp(8, 8), v);
+
+        let v = vec![0];
+
+        assert_eq!(supp(0, 4), v);
+
+        for n in (0..100){
+            assert!(supp(n,2).contains(&n));
+        }
     }
 
     #[test]
     fn test_wedge_greater_than() {
         assert_eq!(wedge_greater_than(8, 5, 3), true);
+        assert_eq!(wedge_greater_than(0, 0, 3), true);
+        assert_eq!(wedge_greater_than(15, 8, 2), true);
     }
 
     #[test]
@@ -339,6 +364,17 @@ mod tests {
     #[test]
     fn test_dimension() {
         assert_eq!(dimension(6, 2, 2), 4);
+        assert_eq!(dimension(8, 4, 3), 13);
+        assert_eq!(dimension(10, 4, 5), 75);
+        assert_eq!(dimension(0, 0, 2), 1);
+    }
+
+
+    #[test]
+    #[should_panic]
+    fn test_multiple_sols(){
+        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
+        knapsack_sols_exists(&v,13);
     }
 
     #[test]
