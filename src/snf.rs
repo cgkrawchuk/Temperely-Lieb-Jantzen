@@ -60,7 +60,7 @@ pub fn normcol(B: &mut Matrix) -> Matrix {
 }
 
 ///lexicographically sorts the columns of a matrix
-pub fn sort_cols_lex(B: &mut Matrix, frm:usize) -> Matrix {
+pub fn sort_cols_lex(B: &mut Matrix, frm: usize) -> Matrix {
     let mut A = B.clone();
     for i in frm..A.cols {
         for j in frm..(A.cols - i - 1) {
@@ -74,18 +74,18 @@ pub fn sort_cols_lex(B: &mut Matrix, frm:usize) -> Matrix {
 }
 
 ///Reduces the entries of a matrix using the rosser method
-pub fn rosser(B: &mut Matrix,row: usize) -> Matrix {
+pub fn rosser(B: &mut Matrix, row: usize) -> Matrix {
     let mut A = B.clone();
     for k in (row..A.cols) {
         if A[(row, k)] < 0 {
             A.add_multiple_coli_to_colj(-2, k, k);
         }
     }
-    A = sort_cols_lex(&mut A,row);
+    A = sort_cols_lex(&mut A, row);
 
     for _ in 0..5 {
-        A.add_multiple_coli_to_colj(-A[(row, row)] / A[(row, row+1)], 1, 0);
-        A = sort_cols_lex(&mut A,row);
+        A.add_multiple_coli_to_colj(-A[(row, row)] / A[(row, row + 1)], 1, 0);
+        A = sort_cols_lex(&mut A, row);
     }
 
     return A;

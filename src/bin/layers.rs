@@ -360,10 +360,10 @@ mod tests {
     }
 
     #[test]
-    fn test_for_overflow(){
-        find_layers(8,2,2);
-        find_layers(10,2,2);
-        find_layers(10,6,3);
+    fn test_for_overflow() {
+        find_layers(8, 2, 2);
+        find_layers(10, 2, 2);
+        find_layers(10, 6, 3);
     }
 
     #[test]
