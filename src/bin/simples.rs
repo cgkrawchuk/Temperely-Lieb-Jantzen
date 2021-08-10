@@ -217,7 +217,7 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
 
     let dimensions = elem_div(&mut g, p);
-    
+
     let mut indicies: Vec<i64> = Vec::new();
     for r in n..m + 1 {
         if (m - r) % 2 == 0 {
@@ -249,7 +249,6 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 }
 
 fn main() {
-    
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -260,8 +259,6 @@ fn main() {
     let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     find_layers(n, m, p);
-    
-    
 }
 
 #[cfg(test)]

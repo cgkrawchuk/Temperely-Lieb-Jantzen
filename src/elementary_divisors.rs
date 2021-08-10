@@ -8,11 +8,11 @@ use crate::util::*;
 ///
 ///Returns the list 'dimensions' where dimensions[i] is the number of elementary
 ///divisiors divisible by p^i subtract the number of elementary divisible by p^(i-1)
-pub fn elem_div(A: &Matrix,  p: i64) -> Vec<i64> {
+pub fn elem_div(A: &Matrix, p: i64) -> Vec<i64> {
     //let r = rank(&A,71) as i64;
     let r = A.cols as i64;
-    //println!("rank is: {:?}", r);   
-    
+    //println!("rank is: {:?}", r);
+
     let n = A.cols;
     let mut Tp = Vec::new();
     for i in 0..n {
@@ -24,20 +24,20 @@ pub fn elem_div(A: &Matrix,  p: i64) -> Vec<i64> {
     let mut res = Vec::new();
 
     while A1.rows < r as usize {
-        let i0 = A2.rows;        
+        let i0 = A2.rows;
         let mut B1: Matrix = Matrix::new(0, 0);
         let mut A21 = 0;
 
         for ii in 0..i0 {
-            let mut vv = A2.row(ii);            
-            
+            let mut vv = A2.row(ii);
+
             for i in 0..A1.rows {
                 let c = (vv[Tp[i]] * inv[i]) % p;
                 if c != 0 {
                     for y in 0..vv.len() {
                         vv[y] = vv[y] - c * A1.row(i)[y];
                     }
-                }                
+                }
             }
             let mut pos = A1.rows;
 
@@ -77,6 +77,3 @@ pub fn elem_div(A: &Matrix,  p: i64) -> Vec<i64> {
     }
     return dimensions;
 }
-
-
-
