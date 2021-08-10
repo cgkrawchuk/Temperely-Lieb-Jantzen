@@ -90,6 +90,29 @@ impl Matrix {
     pub fn entries(&self) -> Vec<i64> {
         self.data.clone()
     }
+
+    pub fn add_row(&self, v: Vec<i64>) -> Matrix {
+        let mut ans: Matrix;
+        if self.data.len() == 0 {
+            ans = Matrix::new(1, v.len());
+            for i in 0..v.len() {
+                ans[(0, i)] = v[i];
+            }
+        } else {
+            assert!(v.len() == self.cols);
+            ans = Matrix::new(self.rows + 1, self.cols);
+            for i in 0..self.rows + 1 {
+                for j in 0..self.cols {
+                    if i < self.rows {
+                        ans[(i, j)] = self.data[i * self.cols + j];
+                    } else {
+                        ans[(i, j)] = v[j];
+                    }
+                }
+            }
+        }
+        return ans;
+    }
 }
 
 impl core::ops::Index<(usize, usize)> for Matrix {
@@ -276,6 +299,20 @@ mod test {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_add_row() {
+        let mut matrix = Matrix::identity(3);
+        let v = vec![9, 1, -3];
+        matrix = matrix.add_row(v);
+        let ans: Matrix = vec![vec![1, 0, 0], vec![0, 1, 0], vec![0, 0, 1], vec![9, 1, -3]].into();
+        assert_eq!(matrix, ans);
+        let v = vec![9, 1, -3];
+        let mut matrix = Matrix::new(0, 0);
+        let ans: Matrix = vec![vec![9, 1, -3]].into();
+        matrix = matrix.add_row(v);
+        assert_eq!(matrix, ans);
     }
 
     #[test]
