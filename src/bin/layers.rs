@@ -276,6 +276,7 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 }
 
 fn main() {
+    
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -286,6 +287,8 @@ fn main() {
     let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     find_layers(n, m, p);
+    
+    
 }
 
 #[cfg(test)]
@@ -360,10 +363,10 @@ mod tests {
     }
 
     #[test]
-    fn test_for_overflow(){
-        find_layers(8,2,2);
-        find_layers(10,2,2);
-        find_layers(10,6,3);
+    fn test_for_overflow() {
+        find_layers(8, 2, 2);
+        find_layers(10, 2, 2);
+        find_layers(10, 6, 3);
     }
 
     #[test]
