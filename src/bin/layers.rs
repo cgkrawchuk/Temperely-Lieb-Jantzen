@@ -2,12 +2,12 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
-use tl_jantzen::{binom, elem_div, Matrix};
+use tl_jantzen::{binom, snf, Matrix};
 
+use std::io::{self, BufRead};
+
+use std::cmp::min;
 use std::env;
-
-use std::fs::File;
-use std::io::prelude::*;
 
 /// Calculate the Gram matrix for a standard module
 ///
@@ -215,9 +215,37 @@ fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
 
 pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
+    //println!("gram matrix is: {}", g);
 
-    let dimensions = elem_div(&mut g, p);
-    
+    g = snf(&mut g);
+
+    //println!("snf of G is: {}", g);
+
+    let mut elem_divisors = Vec::new();
+
+    for k in 0..min(g.rows, g.cols) {
+        elem_divisors.push(g[(k, k)]);
+    }
+    elem_divisors.sort();
+    println!("{:?}", elem_divisors);
+
+    let mut dimensions = Vec::<i64>::new();
+
+    let mut elem_divisors_valuation = Vec::new();
+    for n in elem_divisors.iter() {
+        elem_divisors_valuation.push(p_adic_val(*n, p));
+    }
+    let max_layer = *elem_divisors_valuation.iter().max().unwrap();
+    for layer in 0..=max_layer {
+        // TODO (colin) Dimensions should probably be usizes everywhere
+        dimensions.push(
+            elem_divisors_valuation
+                .iter()
+                .filter(|n| **n == layer)
+                .count() as i64,
+        );
+    }
+
     let mut indicies: Vec<i64> = Vec::new();
     for r in n..m + 1 {
         if (m - r) % 2 == 0 {
@@ -233,7 +261,6 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
         simples.push((*k, dimension(m, *k, p)));
     }
 
-    println!("simples: {:?}", simples);
     for y in dimensions {
         println!("layer has dimension: {:?}", y);
 
@@ -249,7 +276,6 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 }
 
 fn main() {
-    
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -260,8 +286,6 @@ fn main() {
     let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     find_layers(n, m, p);
-    
-    
 }
 
 #[cfg(test)]

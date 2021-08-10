@@ -87,8 +87,8 @@ impl Matrix {
         row
     }
 
-    pub fn entries(&self) -> Vec<i64> {
-        self.data.clone()
+    pub fn entries(&self) -> &[i64] {
+        &self.data
     }
 
     pub fn add_row(&self, v: Vec<i64>) -> Matrix {

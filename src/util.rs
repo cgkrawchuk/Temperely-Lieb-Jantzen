@@ -1,3 +1,5 @@
+use crate::matrix::*;
+
 /// Calculate the binomial coefficients
 ///
 /// Calculates $n$ choose $k$ where this is understood
@@ -16,8 +18,9 @@ pub fn binom(n: i64, k: i64) -> i64 {
 ///
 /// Calculates the multiplicative inverse of 'a' modulo 'module'
 /// Asserts that 'a' is not divisible by 'module'
-pub fn mod_inv(a: i64, module: i64) -> i64 {
-    assert!(a % module != 0, "number is 0 mod...");
+pub fn mod_inv(c: i64, module: i64) -> i64 {
+    assert!(c % module != 0, "number is 0 mod...");
+    let a = ((c % module) + module) % module;
     let mut mn = (module, a);
     let mut xy = (0, 1);
 
@@ -65,6 +68,53 @@ pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
     return (old_r, old_s, old_t);
 }
 
+pub fn rank(matrix: &Matrix, p: i64) -> usize {
+    let mut matrix_out = matrix.clone();
+    let mut pivot_row = 0;
+
+    'col_loop: for column in 0..matrix.cols {
+        reduce_mod_p(&mut matrix_out, p);
+
+        let mut i = pivot_row;
+        while matrix_out[(i, column)] == 0 {
+            i += 1;
+            if i == matrix.rows {
+                continue 'col_loop;
+            }
+        }
+
+        matrix_out.swap_rows(pivot_row, i);
+
+        let q = matrix_out[(pivot_row, column)];
+
+        let mod_inverse = mod_inv(q, p);
+
+        for j in pivot_row + 1..matrix.rows {
+            let hold = matrix_out[(j, column)];
+            for k in 0..matrix.cols {
+                matrix_out[(j, k)] -= hold * matrix_out[(pivot_row, k)] * mod_inverse;
+            }
+        }
+        pivot_row += 1;
+        if pivot_row == matrix.rows {
+            break;
+        }
+    }
+
+    pivot_row
+}
+
+/// Reduces a matrix modulo p
+///
+/// Reduces each entry in a matrix mod p in-place.
+pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
+    for i in 0..matrix.rows {
+        for j in 0..matrix.cols {
+            matrix[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -73,6 +123,29 @@ mod tests {
     #[test]
     fn test_mod_inv() {
         assert_eq!(mod_inv(3, 5), 2);
+        assert_eq!(mod_inv(-58, 3), 2);
+    }
+
+    #[test]
+    fn test_rank() {
+        let a: Matrix = vec![vec![1, 2, 3], vec![-1, -1, 0], vec![3, 8, 9]].into();
+        assert_eq!(rank(&a, 71), 3);
+        let a: Matrix = Matrix::identity(3);
+        assert_eq!(rank(&a, 71), 3);
+
+        let a = Matrix::new(3, 3);
+        assert_eq!(rank(&a, 71), 0);
+
+        let a: Matrix = vec![vec![1, 2, 1], vec![-2, -3, 1], vec![3, 5, 0]].into();
+        assert_eq!(rank(&a, 71), 2);
+    }
+
+    #[test]
+    fn test_reduce_mod_p() {
+        let mut a: Matrix = vec![vec![1, 2, 1], vec![-2, -3, 1], vec![3, 5, 0]].into();
+        let ans: Matrix = vec![vec![1, 2, 1], vec![1, 0, 1], vec![0, 2, 0]].into();
+        reduce_mod_p(&mut a, 3);
+        assert_eq!(a, ans);
     }
 
     #[test]
