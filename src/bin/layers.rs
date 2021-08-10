@@ -2,12 +2,12 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
-use tl_jantzen::{binom, snf, Matrix};
+use tl_jantzen::{binom, elem_div, Matrix};
 
-use std::io::{self, BufRead};
-
-use std::cmp::min;
 use std::env;
+
+use std::fs::File;
+use std::io::prelude::*;
 
 /// Calculate the Gram matrix for a standard module
 ///
