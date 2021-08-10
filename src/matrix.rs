@@ -74,7 +74,7 @@ impl Matrix {
     pub fn col(&self, j: usize) -> Vec<i64> {
         let mut col = Vec::new();
         for i in 0..self.rows {
-            col.push(self[(i,j)]);
+            col.push(self[(i, j)]);
         }
         col
     }
@@ -82,7 +82,7 @@ impl Matrix {
     pub fn row(&self, i: usize) -> Vec<i64> {
         let mut row = Vec::new();
         for j in 0..self.cols {
-            row.push(self[(i,j)]);
+            row.push(self[(i, j)]);
         }
         row
     }
