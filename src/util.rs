@@ -165,6 +165,27 @@ mod tests {
         reduce_mod_p(&mut a, 3);
         assert_eq!(a, ans);
     }
+    #[test]
+    fn test_row_echelon_form() {
+        let m1: Matrix = vec![
+            vec![2, 0, -13, 0],
+            vec![4, 1, 0, 0],
+            vec![0, 8, 1, 0],
+            vec![5, -1, 0, 1],
+        ]
+        .into();
+        let ans1 = vec![
+            vec![2, 0, -13, 0],
+            vec![0, 1, 26, 0],
+            vec![-3, -3, 0, 1],
+            vec![0, 6, -51, 0],
+        ]
+        .into();
+        assert_eq!(row_echelon_form(&m1, 3).0, ans1);
+        let m2: Matrix = vec![vec![4, 0, -3, 0], vec![4, 1, 0, 5], vec![0, 8, 1, 0]].into();
+        let ans2: Matrix = vec![vec![4, 0, -3, 0], vec![0, 1, 3, 5], vec![0, 6, -5, -10]].into();
+        assert_eq!(row_echelon_form(&m2, 3).0, ans2);
+    }
 
     #[test]
     fn test_binom() {
