@@ -69,7 +69,8 @@ pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
 }
 
 pub fn rank(matrix: &Matrix, p: i64) -> usize {
-    row_echelon_form(matrix, p).2
+    let mut id = Matrix::identity(matrix.rows);
+    row_echelon_form(matrix, &id, p).2
 }
 
 /// Reduces a matrix modulo p
@@ -89,12 +90,11 @@ pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
 /// while performing the same operations on the identity matrix
 /// with the same dimensions. Returns both matricies. Division is
 /// performed modulo the argument p
-pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
+pub fn row_echelon_form(mx: &Matrix, id: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
+    let mut identity_matrix = id.clone();
     let mut C: Matrix = mx.clone();
     let mut pivot_row = 0;
-    let mut rank = 0;
-
-    let mut identity_matrix = Matrix::identity(mx.rows);
+    let mut rank = 0;    
 
     'col_loop: for column in 0..mx.cols {
         let mut i = pivot_row;
@@ -198,10 +198,11 @@ mod tests {
             vec![0, 6, -51, 0],
         ]
         .into();
-        assert_eq!(row_echelon_form(&m1, 3).0, ans1);
+        let mut id= Matrix::identity(m1.rows);
+        assert_eq!(row_echelon_form(&m1,&id, 3).0, ans1);
         let m2: Matrix = vec![vec![4, 0, -3, 0], vec![4, 1, 0, 5], vec![0, 8, 1, 0]].into();
         let ans2: Matrix = vec![vec![4, 0, -3, 0], vec![0, 1, 3, 5], vec![0, 6, -5, -10]].into();
-        assert_eq!(row_echelon_form(&m2, 3).0, ans2);
+        assert_eq!(row_echelon_form(&m2, &id,3).0, ans2);
     }
 
     #[test]
