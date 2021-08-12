@@ -49,6 +49,7 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
+    let mut id = Matrix::identity(g.rows);
 
     let mut v = Vec::new();
     v.push(0);
@@ -57,12 +58,13 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut rank = 0;
 
     while r < g.rows {
-        let values = row_echelon_form(&g, p);
+        let values = row_echelon_form(&g,&id, p);
         g = values.0;
+        id = values.1;
         rank = values.2;
         v.push(rank);
         println!("g is: {}", g);
-        println!("identity is: {}", values.1);
+        println!("identity is: {}", id);
 
         println!("v is: {:?}", v);
 
@@ -71,7 +73,12 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 g[(i, j)] /= p;
             }
         }
-
+        for i in 0..rank{
+            for j in 0..id.cols{
+                id[(i,j)]*=p;
+            }
+        }
+        println!("identity is: {}", id);
         r += v[v.len() - 1] - v[v.len() - 2];
     }
 
