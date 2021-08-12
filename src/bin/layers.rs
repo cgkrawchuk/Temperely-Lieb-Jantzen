@@ -44,65 +44,7 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
     gm
 }
 
-/// Calculate the row echelon form of a matrix
-///
-/// Calculates the unreduced row echelon form of a matrix
-/// while performing the same operations on the identity matrix
-/// with the same dimensions. Returns both matricies. Division is
-/// performed modulo the argument p
-pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
-    let mut C: Matrix = mx.clone();
-    let mut pivot_row = 0;
-    let mut rank = 0;
 
-    let mut identity_matrix = Matrix::identity(mx.rows);
-    
-
-    'col_loop: for column in 0..mx.cols {
-        let mut i = pivot_row;
-        while C[(i, column)] %p == 0 {
-            i += 1;
-            if i == mx.rows {
-                continue 'col_loop;
-            }
-        }
-
-        C.swap_rows(pivot_row, i);
-        
-        identity_matrix.swap_rows(pivot_row, i);
-
-        let q = C[(pivot_row, column)];
-
-        let mod_inverse = mod_inv(q, p);
-
-        for j in pivot_row + 1..mx.rows {
-            let hold = ((C[(j, column)]%p)+p)%p;
-            for k in 0..mx.cols {
-                C[(j, k)] -= hold * C[(pivot_row, k)] * mod_inverse;
-            }
-            for k in 0..identity_matrix.cols {
-                identity_matrix[(j, k)] -= hold * identity_matrix[(pivot_row, k)] * mod_inverse;
-            }
-        }
-        pivot_row += 1;
-        if pivot_row == mx.rows {
-            break;
-        }
-    }
-    println!("{}", C);
-    (C, identity_matrix, pivot_row)
-}
-
-/// Reduces a matrix modulo p
-///
-/// Reduces each entry in a matrix mod p in-place.
-pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
-    for i in 0..matrix.rows {
-        for j in 0..matrix.cols {
-            matrix[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
-        }
-    }
-}
 
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
@@ -177,27 +119,7 @@ mod tests {
         assert_eq!(m, n);
     }
 
-    #[test]
-    fn test_row_echelon_form() {
-        let m1: Matrix = vec![
-            vec![2, 0, -13, 0],
-            vec![4, 1, 0, 0],
-            vec![0, 8, 1, 0],
-            vec![5, -1, 0, 1],
-        ]
-        .into();
-        let ans1 = vec![
-            vec![2, 0, -13, 0],
-            vec![0, 1, 26, 0],
-            vec![-3, -3, 0, 1],
-            vec![0, 6, -51, 0],
-        ]
-        .into();
-        assert_eq!(row_echelon_form(&m1, 3).0, ans1);
-        let m2: Matrix = vec![vec![4, 0, -3, 0], vec![4, 1, 0, 5], vec![0, 8, 1, 0]].into();
-        let ans2: Matrix = vec![vec![4, 0, -3, 0], vec![0, 1, 3, 5], vec![0, 6, -5, -10]].into();
-        assert_eq!(row_echelon_form(&m2, 3).0, ans2);
-    }
+    
 
     #[test]
     fn test_gram_matrix() {
