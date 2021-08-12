@@ -69,39 +69,7 @@ pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
 }
 
 pub fn rank(matrix: &Matrix, p: i64) -> usize {
-    let mut matrix_out = matrix.clone();
-    let mut pivot_row = 0;
-
-    'col_loop: for column in 0..matrix.cols {
-        reduce_mod_p(&mut matrix_out, p);
-
-        let mut i = pivot_row;
-        while matrix_out[(i, column)] == 0 {
-            i += 1;
-            if i == matrix.rows {
-                continue 'col_loop;
-            }
-        }
-
-        matrix_out.swap_rows(pivot_row, i);
-
-        let q = matrix_out[(pivot_row, column)];
-
-        let mod_inverse = mod_inv(q, p);
-
-        for j in pivot_row + 1..matrix.rows {
-            let hold = matrix_out[(j, column)];
-            for k in 0..matrix.cols {
-                matrix_out[(j, k)] -= hold * matrix_out[(pivot_row, k)] * mod_inverse;
-            }
-        }
-        pivot_row += 1;
-        if pivot_row == matrix.rows {
-            break;
-        }
-    }
-
-    pivot_row
+     row_echelon_form(matrix, p).2
 }
 
 /// Reduces a matrix modulo p
@@ -113,6 +81,56 @@ pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
             matrix[(i, j)] = ((matrix[(i, j)] % p) + p) % p;
         }
     }
+}
+
+
+/// Calculate the row echelon form of a matrix
+///
+/// Calculates the unreduced row echelon form of a matrix
+/// while performing the same operations on the identity matrix
+/// with the same dimensions. Returns both matricies. Division is
+/// performed modulo the argument p
+pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
+    let mut C: Matrix = mx.clone();
+    let mut pivot_row = 0;
+    let mut rank = 0;
+
+    let mut identity_matrix = Matrix::identity(mx.rows);
+    
+
+    'col_loop: for column in 0..mx.cols {
+        let mut i = pivot_row;
+        while C[(i, column)] %p == 0 {
+            i += 1;
+            if i == mx.rows {
+                continue 'col_loop;
+            }
+        }
+
+        C.swap_rows(pivot_row, i);
+        
+        identity_matrix.swap_rows(pivot_row, i);
+
+        let q = C[(pivot_row, column)];
+
+        let mod_inverse = mod_inv(q, p);
+
+        for j in pivot_row + 1..mx.rows {
+            let hold = ((C[(j, column)]%p)+p)%p;
+            for k in 0..mx.cols {
+                C[(j, k)] -= hold * C[(pivot_row, k)] * mod_inverse;
+            }
+            for k in 0..identity_matrix.cols {
+                identity_matrix[(j, k)] -= hold * identity_matrix[(pivot_row, k)] * mod_inverse;
+            }
+        }
+        pivot_row += 1;
+        if pivot_row == mx.rows {
+            break;
+        }
+    }
+    
+    (C, identity_matrix, pivot_row)
 }
 
 #[cfg(test)]
