@@ -69,7 +69,7 @@ pub fn extended_euclid(x: i64, y: i64) -> (i64, i64, i64) {
 }
 
 pub fn rank(matrix: &Matrix, p: i64) -> usize {
-     row_echelon_form(matrix, p).2
+    row_echelon_form(matrix, p).2
 }
 
 /// Reduces a matrix modulo p
@@ -83,7 +83,6 @@ pub fn reduce_mod_p(matrix: &mut Matrix, p: i64) {
     }
 }
 
-
 /// Calculate the row echelon form of a matrix
 ///
 /// Calculates the unreduced row echelon form of a matrix
@@ -96,11 +95,10 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     let mut rank = 0;
 
     let mut identity_matrix = Matrix::identity(mx.rows);
-    
 
     'col_loop: for column in 0..mx.cols {
         let mut i = pivot_row;
-        while C[(i, column)] %p == 0 {
+        while C[(i, column)] % p == 0 {
             i += 1;
             if i == mx.rows {
                 continue 'col_loop;
@@ -108,7 +106,7 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
         }
 
         C.swap_rows(pivot_row, i);
-        
+
         identity_matrix.swap_rows(pivot_row, i);
 
         let q = C[(pivot_row, column)];
@@ -116,7 +114,7 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
         let mod_inverse = mod_inv(q, p);
 
         for j in pivot_row + 1..mx.rows {
-            let hold = ((C[(j, column)]%p)+p)%p;
+            let hold = ((C[(j, column)] % p) + p) % p;
             for k in 0..mx.cols {
                 C[(j, k)] -= hold * C[(pivot_row, k)] * mod_inverse;
             }
@@ -129,7 +127,7 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
             break;
         }
     }
-    
+
     (C, identity_matrix, pivot_row)
 }
 
@@ -164,7 +162,26 @@ mod tests {
         let ans: Matrix = vec![vec![1, 2, 1], vec![1, 0, 1], vec![0, 2, 0]].into();
         reduce_mod_p(&mut a, 3);
         assert_eq!(a, ans);
+
+        let mut m: Matrix = vec![
+            vec![2, 0, -13, 0],
+            vec![0, 1, 0, 0],
+            vec![0, 0, 1, 0],
+            vec![0, -1, 0, 1],
+        ]
+        .into();
+
+        let n: Matrix = vec![
+            vec![2, 0, 2, 0],
+            vec![0, 1, 0, 0],
+            vec![0, 0, 1, 0],
+            vec![0, 2, 0, 1],
+        ]
+        .into();
+        reduce_mod_p(&mut m, 3);
+        assert_eq!(m, n);
     }
+
     #[test]
     fn test_row_echelon_form() {
         let m1: Matrix = vec![
