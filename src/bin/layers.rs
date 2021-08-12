@@ -52,16 +52,15 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
 /// performed modulo the argument p
 pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
     let mut C: Matrix = mx.clone();
-    let mut matrix_out = mx.clone();
     let mut pivot_row = 0;
     let mut rank = 0;
 
     let mut identity_matrix = Matrix::identity(mx.rows);
-    reduce_mod_p(&mut matrix_out, p);
+    
 
     'col_loop: for column in 0..mx.cols {
         let mut i = pivot_row;
-        while matrix_out[(i, column)] == 0 {
+        while C[(i, column)] %p == 0 {
             i += 1;
             if i == mx.rows {
                 continue 'col_loop;
@@ -69,18 +68,16 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
         }
 
         C.swap_rows(pivot_row, i);
-        matrix_out.swap_rows(pivot_row, i);
+        
         identity_matrix.swap_rows(pivot_row, i);
 
-        let q = matrix_out[(pivot_row, column)];
+        let q = C[(pivot_row, column)];
 
         let mod_inverse = mod_inv(q, p);
 
         for j in pivot_row + 1..mx.rows {
-            let hold = matrix_out[(j, column)];
+            let hold = ((C[(j, column)]%p)+p)%p;
             for k in 0..mx.cols {
-                matrix_out[(j, k)] -= (hold * matrix_out[(pivot_row, k)] * mod_inverse);
-                matrix_out[(j, k)] = ((matrix_out[(j, k)] % p) + p) % p;
                 C[(j, k)] -= hold * C[(pivot_row, k)] * mod_inverse;
             }
             for k in 0..identity_matrix.cols {
@@ -92,7 +89,7 @@ pub fn row_echelon_form(mx: &Matrix, p: i64) -> (Matrix, Matrix, usize) {
             break;
         }
     }
-
+    println!("{}", C);
     (C, identity_matrix, pivot_row)
 }
 
@@ -142,6 +139,7 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
 }
 
 fn main() {
+    
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
