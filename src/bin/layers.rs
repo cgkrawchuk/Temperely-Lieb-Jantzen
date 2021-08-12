@@ -2,7 +2,7 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
-use tl_jantzen::{mod_inv, Matrix};
+use tl_jantzen::{mod_inv, Matrix, row_echelon_form};
 
 use std::env;
 
@@ -98,27 +98,7 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_reduce_mod_p() {
-        let mut m: Matrix = vec![
-            vec![2, 0, -13, 0],
-            vec![0, 1, 0, 0],
-            vec![0, 0, 1, 0],
-            vec![0, -1, 0, 1],
-        ]
-        .into();
-
-        let n: Matrix = vec![
-            vec![2, 0, 2, 0],
-            vec![0, 1, 0, 0],
-            vec![0, 0, 1, 0],
-            vec![0, 2, 0, 1],
-        ]
-        .into();
-        reduce_mod_p(&mut m, 3);
-        assert_eq!(m, n);
-    }
-
+    
     
 
     #[test]
