@@ -1,19 +1,11 @@
-use crate::matrix::*;
-use crate::util::*;
 
 extern crate itertools;
 
-use crate::{binom, extended_euclid, Matrix};
-use itertools::Itertools;
+use crate::{ extended_euclid, Matrix};
 use std::ops::Range;
-use temperley_lieb_cat::*;
-
-use std::io::{self, BufRead};
-
-use std::cmp::min;
 
 ///Bubble sorts columns by their maximum entry
-pub fn sort_cols_max(A: &mut Matrix) -> (Matrix) {
+pub fn sort_cols_max(A: &mut Matrix) -> Matrix {
     let mut A = A.clone();
     for i in 0..A.cols {
         for j in 0..A.cols - i - 1 {
@@ -76,7 +68,7 @@ pub fn sort_cols_lex(B: &mut Matrix, frm: usize) -> Matrix {
 ///Reduces the entries of a matrix using the rosser method
 pub fn rosser(B: &mut Matrix, row: usize) -> Matrix {
     let mut A = B.clone();
-    for k in (row..A.cols) {
+    for k in row..A.cols {
         if A[(row, k)] < 0 {
             A.add_multiple_coli_to_colj(-2, k, k);
         }

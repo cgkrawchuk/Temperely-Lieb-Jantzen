@@ -336,7 +336,7 @@ mod test {
 
     #[test]
     fn test_col() {
-        let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
+        let  mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
 
         assert_eq!(mat.col(0), vec![1, 0, -3]);
 
@@ -345,7 +345,7 @@ mod test {
 
     #[test]
     fn test_row() {
-        let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
+        let  mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
 
         assert_eq!(mat.row(0), vec![1, 0, -1]);
 
@@ -355,7 +355,7 @@ mod test {
     #[test]
     #[should_panic]
     fn return_out_of_bounds_cols() {
-        let mut mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
+        let  mat: Matrix = vec![vec![1, 0, -1], vec![0, 1, 0], vec![-3, 0, 1]].into();
         mat.col(3);
         mat.row(4);
     }

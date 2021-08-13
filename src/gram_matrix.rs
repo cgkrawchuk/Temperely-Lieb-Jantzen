@@ -2,8 +2,6 @@ extern crate itertools;
 
 use crate::matrix::*;
 
-use crate::util::*;
-
 use temperley_lieb_cat::*;
 
 use itertools::Itertools;
