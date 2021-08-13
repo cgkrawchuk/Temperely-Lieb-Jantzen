@@ -249,6 +249,17 @@ pub fn find_layers(m: i64, n: i64, p: i64) {
 }
 
 fn main() {
+    for i in 16..20 {
+        for j in (0..i).rev() {
+            if (i - j) % 2 == 0 {
+                println!("n: {0}, m: {1}, p: 2", i, j);
+                find_layers(i, j, 2);
+                println!("");
+            }
+        }
+    }
+
+    /*
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -259,6 +270,8 @@ fn main() {
     let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     find_layers(n, m, p);
+
+    */
 }
 
 #[cfg(test)]

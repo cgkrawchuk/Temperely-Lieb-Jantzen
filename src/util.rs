@@ -94,7 +94,7 @@ pub fn row_echelon_form(mx: &Matrix, id: &Matrix, p: i64) -> (Matrix, Matrix, us
     let mut identity_matrix = id.clone();
     let mut C: Matrix = mx.clone();
     let mut pivot_row = 0;
-    let mut rank = 0;    
+    let mut rank = 0;
 
     'col_loop: for column in 0..mx.cols {
         let mut i = pivot_row;
@@ -198,11 +198,11 @@ mod tests {
             vec![0, 6, -51, 0],
         ]
         .into();
-        let mut id= Matrix::identity(m1.rows);
-        assert_eq!(row_echelon_form(&m1,&id, 3).0, ans1);
+        let mut id = Matrix::identity(m1.rows);
+        assert_eq!(row_echelon_form(&m1, &id, 3).0, ans1);
         let m2: Matrix = vec![vec![4, 0, -3, 0], vec![4, 1, 0, 5], vec![0, 8, 1, 0]].into();
         let ans2: Matrix = vec![vec![4, 0, -3, 0], vec![0, 1, 3, 5], vec![0, 6, -5, -10]].into();
-        assert_eq!(row_echelon_form(&m2, &id,3).0, ans2);
+        assert_eq!(row_echelon_form(&m2, &id, 3).0, ans2);
     }
 
     #[test]

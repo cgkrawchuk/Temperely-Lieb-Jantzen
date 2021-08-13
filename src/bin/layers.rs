@@ -2,7 +2,7 @@ extern crate itertools;
 
 use itertools::Itertools;
 use temperley_lieb_cat::*;
-use tl_jantzen::{mod_inv, Matrix, row_echelon_form};
+use tl_jantzen::{mod_inv, row_echelon_form, Matrix};
 
 use std::env;
 
@@ -44,8 +44,6 @@ pub fn gram_matrix(n: usize, m: usize) -> Matrix {
     gm
 }
 
-
-
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut g = gram_matrix(m, n);
@@ -59,15 +57,15 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
 
     while r < g.rows {
         println!("r is: {}", r);
-        let values = row_echelon_form(&g,&id, p);
+        let values = row_echelon_form(&g, &id, p);
         g = values.0;
         id = values.1;
         rank = values.2;
-        
+
         v.push(rank);
-    
+
         println!("basis of layer is: ");
-        for i in r..rank{
+        for i in r..rank {
             println!("{:?}", id.row(i));
         }
 
@@ -76,12 +74,12 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 g[(i, j)] /= p;
             }
         }
-        for i in 0..rank{
-            for j in 0..id.cols{
-                id[(i,j)]*=p;
+        for i in 0..rank {
+            for j in 0..id.cols {
+                id[(i, j)] *= p;
             }
         }
-        
+
         r += v[v.len() - 1] - v[v.len() - 2];
     }
 
@@ -91,7 +89,6 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
 }
 
 fn main() {
-    
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -107,9 +104,6 @@ fn main() {
 mod tests {
 
     use super::*;
-
-    
-    
 
     #[test]
     fn test_gram_matrix() {
