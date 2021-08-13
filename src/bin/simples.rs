@@ -1,39 +1,6 @@
-use tl_jantzen::{binom, elem_div, Matrix,gram_matrix};
+use tl_jantzen::{binom, convert_base_p, elem_div, gram_matrix, knapsack_sols, p_adic_val, Matrix};
 
 use std::env;
-
-
-/// Converts an i64 into the vector of its digits in base p
-///
-/// Returns the list of values of 'r' in base 'p'
-/// mutiplied by the corresponding power of p. The values are
-/// given in descending order  
-fn convert_base_p(mut r: i64, p: i64) -> Vec<i64> {
-    assert!(2 <= p);
-    let mut digits: Vec<i64> = Vec::new();
-    let mut index = 0;
-    while r > 0 {
-        digits.push((r % p) * (p.pow(index as u32)));
-        r /= p;
-        index += 1;
-    }
-    digits.reverse();
-    digits
-}
-
-/// Calculates the 'p'-adic valuation of 'a'
-///
-/// Returns the highest power of 'p' that divides
-/// 'a'. Asserts that 'a' is not 0.
-fn p_adic_val(mut a: i64, p: i64) -> i64 {
-    assert!(a != 0, "vp(0)=infinity");
-    let mut index = 0;
-    while a % p == 0 {
-        a /= p;
-        index += 1;
-    }
-    index
-}
 
 /// Calculates the value of Supp('r') with provided prime 'p'
 ///
@@ -134,41 +101,6 @@ fn dimension(n: i64, m: i64, p: i64) -> i64 {
     ans
 }
 
-/// Checks for a solution to the knapsack problem
-///
-/// Accepts a vector of pairs and checks if the sum of
-/// the second entries of a subset of these pairs totals
-/// to 'sum'. Returns TRUE if a solutions exists and
-/// FALSE otherwise
-fn knapsack_sols_exists(v: &[(i64, i64)], sum: i64) -> bool {
-    if v.is_empty() {
-        sum == 0
-    } else {
-        let with_first = knapsack_sols_exists(&v[1..], sum - v[0].1);
-        let without_first = knapsack_sols_exists(&v[1..], sum);
-        if sum != 0 {
-            assert!(!(with_first & without_first), "multiple solutions");
-        }
-        with_first | without_first
-    }
-}
-
-/// Returns a solution to the knapsack problem if it exists
-///
-/// Accepts a vector of pairs and returns a subset of these pairs if
-/// the sum of their second entry totals to 'sum'
-fn knapsack_sols(v: &[(i64, i64)], mut sum: i64) -> Vec<(i64, i64)> {
-    let mut ans: Vec<(i64, i64)> = Vec::new();
-    knapsack_sols_exists(&v, sum);
-    for (n, x) in v.iter().enumerate() {
-        if knapsack_sols_exists(&v[(n + 1)..], sum - x.1) {
-            ans.push(*x);
-            sum -= x.1;
-        }
-    }
-    ans
-}
-
 pub fn find_layers(m: i64, n: i64, p: i64) {
     let mut g = gram_matrix(m as usize, n as usize);
 
@@ -216,7 +148,7 @@ fn main() {
         }
     }
     */
-    
+
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!("Enter m n p seperated by spaces");
@@ -227,8 +159,6 @@ fn main() {
     let p: i64 = args[3].parse().expect("Please enter an integer for p");
 
     find_layers(n, m, p);
-
-    
 }
 
 #[cfg(test)]
@@ -237,23 +167,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_convert_base_p() {
-        let v = vec![4, 2, 1];
-        assert_eq!(convert_base_p(7, 2), v);
-        assert_eq!(convert_base_p(0, 2), vec![]);
-        let v = vec![243, 0, 54, 0, 0, 2];
-        assert_eq!(convert_base_p(299, 3), v);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_p_adic_val_infinity() {
-        p_adic_val(0, 2);
-    }
-    #[test]
-    fn test_p_adic_val() {
-        assert_eq!(p_adic_val(54, 3), 3);
-        assert_eq!(p_adic_val(1, 2), 0);
+    fn test_dimension() {
+        assert_eq!(dimension(6, 2, 2), 4);
+        assert_eq!(dimension(8, 4, 3), 13);
+        assert_eq!(dimension(10, 4, 5), 75);
+        assert_eq!(dimension(0, 0, 2), 1);
     }
 
     #[test]
@@ -307,76 +225,5 @@ mod tests {
         find_layers(8, 2, 2);
         find_layers(10, 2, 2);
         find_layers(10, 6, 3);
-    }
-
-    #[test]
-    fn test_dimension() {
-        assert_eq!(dimension(6, 2, 2), 4);
-        assert_eq!(dimension(8, 4, 3), 13);
-        assert_eq!(dimension(10, 4, 5), 75);
-        assert_eq!(dimension(0, 0, 2), 1);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_multiple_sols() {
-        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
-        knapsack_sols_exists(&v, 13);
-    }
-
-    #[test]
-    fn test_knapsack_sols_exists() {
-        let v = vec![(0, 1), (0, 2), (0, 3), (0, 10)];
-        let w = vec![(0, 10), (1, 3), (2, 2), (3, 2)];
-        let sum = 13;
-        assert_eq!(knapsack_sols_exists(&w, sum), true);
-
-        let w: Vec<(i64, i64)> = vec![];
-
-        assert_eq!(knapsack_sols_exists(&w, sum), false);
-
-        let sum = 0;
-
-        assert_eq!(knapsack_sols_exists(&v, sum), true);
-
-        assert_eq!(knapsack_sols_exists(&w, sum), true);
-    }
-
-    #[test]
-    fn test_knapsack_sols() {
-        let v = vec![(0, 1), (0, 3), (0, 10)];
-        let sum = 13;
-        assert_eq!(knapsack_sols(&v, sum), vec![(0, 3), (0, 10)]);
-
-        let w: Vec<(i64, i64)> = vec![];
-
-        assert_eq!(knapsack_sols(&w, sum), w);
-        let sum = 0;
-
-        assert_eq!(knapsack_sols(&v, sum), w);
-
-        assert_eq!(knapsack_sols(&w, sum), w);
-    }
-
-    #[test]
-    fn test_gram_matrix() {
-        let m: Matrix = vec![
-            vec![4, 2, 0, 0, 2, 1, 0, 0, 2, 0, 0, 0, 0, 0],
-            vec![2, 4, 2, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0],
-            vec![0, 2, 4, 2, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0],
-            vec![0, 0, 2, 4, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0],
-            vec![2, 1, 0, 0, 4, 2, 0, 0, 1, 0, 0, 1, 0, 0],
-            vec![1, 2, 1, 0, 2, 4, 2, 0, 2, 1, 0, 2, 0, 0],
-            vec![0, 1, 2, 1, 0, 2, 4, 2, 1, 2, 1, 1, 0, 0],
-            vec![0, 0, 1, 2, 0, 0, 2, 4, 0, 1, 2, 0, 0, 0],
-            vec![2, 1, 0, 0, 1, 2, 1, 0, 4, 2, 0, 1, 0, 1],
-            vec![0, 0, 0, 0, 0, 1, 2, 1, 2, 4, 2, 2, 1, 2],
-            vec![0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 4, 1, 2, 1],
-            vec![0, 0, 0, 0, 1, 2, 1, 0, 1, 2, 1, 4, 2, 1],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2],
-            vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 4],
-        ]
-        .into();
-        assert_eq!(gram_matrix(7, 3), m);
     }
 }

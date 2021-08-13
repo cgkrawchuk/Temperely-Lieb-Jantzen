@@ -1,7 +1,6 @@
-
 extern crate itertools;
 
-use crate::{ extended_euclid, Matrix};
+use crate::{extended_euclid, Matrix};
 use std::ops::Range;
 
 ///Bubble sorts columns by their maximum entry

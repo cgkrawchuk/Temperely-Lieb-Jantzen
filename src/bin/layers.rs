@@ -1,7 +1,6 @@
-use tl_jantzen::{ row_echelon_form, Matrix, gram_matrix};
+use tl_jantzen::{gram_matrix, row_echelon_form, Matrix};
 
 use std::env;
-
 
 /// This fn needs to be modified...
 fn recursive_ops(m: usize, n: usize, p: i64) {
