@@ -9,3 +9,6 @@ pub use snf::*;
 
 mod elementary_divisors;
 pub use elementary_divisors::*;
+
+mod gram_matrix;
+pub use gram_matrix::*;
