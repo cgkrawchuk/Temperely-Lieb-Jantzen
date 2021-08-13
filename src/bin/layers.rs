@@ -58,15 +58,18 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
     let mut rank = 0;
 
     while r < g.rows {
+        println!("r is: {}", r);
         let values = row_echelon_form(&g,&id, p);
         g = values.0;
         id = values.1;
         rank = values.2;
+        
         v.push(rank);
-        println!("g is: {}", g);
-        println!("identity is: {}", id);
-
-        println!("v is: {:?}", v);
+    
+        println!("basis of layer is: ");
+        for i in r..rank{
+            println!("{:?}", id.row(i));
+        }
 
         for i in rank..g.rows {
             for j in 0..g.cols {
@@ -78,7 +81,7 @@ fn recursive_ops(m: usize, n: usize, p: i64) {
                 id[(i,j)]*=p;
             }
         }
-        println!("identity is: {}", id);
+        
         r += v[v.len() - 1] - v[v.len() - 2];
     }
 
